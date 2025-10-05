@@ -34,9 +34,9 @@ const Header: React.FC<HeaderProps> = ({
   const textStyle = 'text-base font-semibold'; // Unified text style
 
   const Brand: React.FC = () => (
-    <div className="flex items-center space-x-3">
-      {logo && <img src={logo} alt="CK Forest Gardens Logo" className="h-10 object-contain" />}
-      <span className="whitespace-nowrap">CK Forest Gardens</span>
+    <div className="flex items-center space-x-2">
+      {logo && <img src={logo} alt="CK Forest Gardens Logo" className="h-8 sm:h-10 object-contain" />}
+      <span className="text-sm sm:text-base whitespace-nowrap">CK Forest Gardens</span>
     </div>
   );
 
@@ -46,18 +46,20 @@ const Header: React.FC<HeaderProps> = ({
         {isAdminView ? (
           // Simplified layout for Admin
           <div className="flex items-center justify-between h-16">
-            <div className="flex items-center space-x-2">
-              <button onClick={() => navigate('home')} className={textStyle}>
+            <div className="flex items-center space-x-2 min-w-0 flex-1">
+              <button onClick={() => navigate('home')} className={`${textStyle} min-w-0`}>
                 <Brand />
               </button>
-              {/* Install button inline with title (Admin view) */}
+            </div>
+            <div className="flex items-center space-x-2">
+              {/* Install button (Admin view) */}
               {installAvailable ? (
                 <button
                   id="installBtn"
                   onClick={onInstallClick}
-                  className="ml-2 px-3 py-1 bg-green-600 text-white rounded-md text-sm hover:bg-green-700 transition-colors"
+                  className="px-2 py-1 bg-green-600 text-white rounded text-xs sm:text-sm hover:bg-green-700 transition-colors"
                 >
-                  Install App
+                  Install
                 </button>
               ) : (
                 <button
@@ -70,13 +72,11 @@ const Header: React.FC<HeaderProps> = ({
                       alert('To install this app:\n\nChrome/Edge: Click the install icon in the address bar\nSafari: Tap Share > Add to Home Screen\nFirefox: Not supported');
                     }
                   }}
-                  className="ml-2 px-3 py-1 bg-blue-600 text-white rounded-md text-sm hover:bg-blue-700 transition-colors"
+                  className="px-2 py-1 bg-blue-600 text-white rounded text-xs sm:text-sm hover:bg-blue-700 transition-colors"
                 >
-                  Install App
+                  Install
                 </button>
               )}
-            </div>
-            <div>
               <nav>
                 <button
                   onClick={onLogout}
@@ -90,18 +90,20 @@ const Header: React.FC<HeaderProps> = ({
         ) : (
           // Original layout for Public/User
           <div className="flex items-center justify-between h-16">
-            <div className="flex items-center space-x-2">
-              <button onClick={() => navigate('home')} className={textStyle}>
+            <div className="flex items-center space-x-2 min-w-0 flex-1">
+              <button onClick={() => navigate('home')} className={`${textStyle} min-w-0`}>
                 <Brand />
               </button>
-              {/* Install button inline with title (Public/User view) */}
+            </div>
+            <nav className="flex items-center space-x-1 sm:space-x-2">
+              {/* Install button (Public/User view) */}
               {installAvailable ? (
                 <button
                   id="installBtn"
                   onClick={onInstallClick}
-                  className="ml-2 px-3 py-1 bg-green-600 text-white rounded-md text-sm hover:bg-green-700 transition-colors"
+                  className="px-2 py-1 bg-green-600 text-white rounded text-xs sm:text-sm hover:bg-green-700 transition-colors"
                 >
-                  Install App
+                  Install
                 </button>
               ) : (
                 <button
@@ -114,41 +116,39 @@ const Header: React.FC<HeaderProps> = ({
                       alert('To install this app:\n\nChrome/Edge: Click the install icon in the address bar\nSafari: Tap Share > Add to Home Screen\nFirefox: Not supported');
                     }
                   }}
-                  className="ml-2 px-3 py-1 bg-blue-600 text-white rounded-md text-sm hover:bg-blue-700 transition-colors"
+                  className="px-2 py-1 bg-blue-600 text-white rounded text-xs sm:text-sm hover:bg-blue-700 transition-colors"
                 >
-                  Install App
+                  Install
                 </button>
               )}
-            </div>
-            <nav className="flex items-center space-x-2">
               {/* Navigation buttons */}
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-1 sm:space-x-2">
                 <button
                   onClick={onBack}
                   disabled={!onBack}
-                  className={`w-8 h-8 flex items-center justify-center rounded-md hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors`}
+                  className={`w-6 h-6 sm:w-8 sm:h-8 flex items-center justify-center rounded-md hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors`}
                   title="Back"
                 >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <svg width="12" height="12" className="sm:w-4 sm:h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="m15 18-6-6 6-6"/>
                   </svg>
                 </button>
                 <button
                   onClick={onForward}
                   disabled={!onForward}
-                  className={`w-8 h-8 flex items-center justify-center rounded-md hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors`}
+                  className={`w-6 h-6 sm:w-8 sm:h-8 flex items-center justify-center rounded-md hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors`}
                   title="Forward"
                 >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <svg width="12" height="12" className="sm:w-4 sm:h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="m9 18 6-6-6-6"/>
                   </svg>
                 </button>
                 <button
                   onClick={() => navigate('home')}
-                  className={`w-8 h-8 flex items-center justify-center rounded-md hover:bg-green-600 transition-colors`}
+                  className={`w-6 h-6 sm:w-8 sm:h-8 flex items-center justify-center rounded-md hover:bg-green-600 transition-colors`}
                   title="Home"
                 >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <svg width="12" height="12" className="sm:w-4 sm:h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
                     <polyline points="9,22 9,12 15,12 15,22"/>
                   </svg>
@@ -160,13 +160,13 @@ const Header: React.FC<HeaderProps> = ({
                 <>
                   <button
                     onClick={() => navigate('my-bookings')}
-                    className={`${textStyle} hover:opacity-80 transition-opacity`}
+                    className={`text-xs sm:text-base font-semibold hover:opacity-80 transition-opacity`}
                   >
                     My Bookings
                   </button>
                   <button
                     onClick={onLogout}
-                    className={`${textStyle} hover:opacity-80 transition-opacity`}
+                    className={`text-xs sm:text-base font-semibold hover:opacity-80 transition-opacity`}
                   >
                     Logout
                   </button>
