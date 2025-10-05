@@ -27,5 +27,6 @@ export default defineConfig(({ mode }) => {
         },
       },
       base: '/ck-forest-gardens-booking-app/',
+      publicDir: 'public',
     };
 });
