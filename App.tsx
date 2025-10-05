@@ -106,7 +106,7 @@ const App: React.FC = () => {
       e.preventDefault();
       setDeferredPrompt(e as BeforeInstallPromptEvent);
       setInstallAvailable(true);
-      console.log('PWA install prompt available');
+      console.log('PWA install prompt available', e);
     };
     const onInstalled = () => {
       setInstallAvailable(false);
@@ -120,27 +120,40 @@ const App: React.FC = () => {
       console.log('PWA already installed');
     }
 
-    window.addEventListener('beforeinstallprompt', onBIP);
-    window.addEventListener('appinstalled', onInstalled);
-    
-    // Also listen for display mode changes
-    const mediaQuery = window.matchMedia('(display-mode: standalone)');
-    const handleDisplayModeChange = (e: MediaQueryListEvent) => {
-      if (e.matches) {
-        setInstallAvailable(false);
-        setDeferredPrompt(null);
-      }
-    };
-    mediaQuery.addEventListener('change', handleDisplayModeChange);
+    // Add a small delay to ensure the page is fully loaded
+    const timer = setTimeout(() => {
+      window.addEventListener('beforeinstallprompt', onBIP);
+      window.addEventListener('appinstalled', onInstalled);
+      
+      // Also listen for display mode changes
+      const mediaQuery = window.matchMedia('(display-mode: standalone)');
+      const handleDisplayModeChange = (e: MediaQueryListEvent) => {
+        if (e.matches) {
+          setInstallAvailable(false);
+          setDeferredPrompt(null);
+        }
+      };
+      mediaQuery.addEventListener('change', handleDisplayModeChange);
+      
+      // Store cleanup function
+      window.cleanupPWA = () => {
+        window.removeEventListener('beforeinstallprompt', onBIP);
+        window.removeEventListener('appinstalled', onInstalled);
+        mediaQuery.removeEventListener('change', handleDisplayModeChange);
+      };
+    }, 1000);
     
     return () => {
-      window.removeEventListener('beforeinstallprompt', onBIP);
-      window.removeEventListener('appinstalled', onInstalled);
-      mediaQuery.removeEventListener('change', handleDisplayModeChange);
+      clearTimeout(timer);
+      if (window.cleanupPWA) {
+        window.cleanupPWA();
+      }
     };
   }, []);
 
   const handleInstallClick = async () => {
+    console.log('Install button clicked, deferredPrompt:', !!deferredPrompt);
+    
     if (deferredPrompt) {
       try {
         console.log('Triggering PWA install prompt');
@@ -150,20 +163,27 @@ const App: React.FC = () => {
         
         if (choiceResult.outcome === 'accepted') {
           console.log('User accepted PWA installation');
+          setInstallAvailable(false);
+          setDeferredPrompt(null);
         } else {
           console.log('User dismissed PWA installation');
         }
-        
-        setDeferredPrompt(null);
-        setInstallAvailable(false);
       } catch (error) {
         console.error('Error during PWA installation:', error);
-        // Fallback to manual instructions
-        showManualInstallInstructions();
+        // Don't show manual instructions, just log the error
       }
     } else {
-      // No deferred prompt available, show manual instructions
-      showManualInstallInstructions();
+      console.log('No deferred prompt available, checking if already installed');
+      // Check if already installed
+      if (window.matchMedia('(display-mode: standalone)').matches) {
+        console.log('App is already installed');
+        setInstallAvailable(false);
+      } else {
+        console.log('App not installed and no prompt available - this might be a browser limitation');
+        // For debugging, let's check what's happening
+        console.log('Service Worker registered:', 'serviceWorker' in navigator);
+        console.log('Manifest loaded:', document.querySelector('link[rel="manifest"]')?.getAttribute('href'));
+      }
     }
   };
 
