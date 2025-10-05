@@ -51,14 +51,30 @@ const Header: React.FC<HeaderProps> = ({
                 <Brand />
               </button>
               {/* Install button inline with title (Admin view) */}
-              <button
-                id="installBtn"
-                hidden={!installAvailable}
-                onClick={onInstallClick}
-                className="ml-2 px-3 py-1 bg-green-600 text-white rounded-md text-sm"
-              >
-                Install
-              </button>
+              {installAvailable ? (
+                <button
+                  id="installBtn"
+                  onClick={onInstallClick}
+                  className="ml-2 px-3 py-1 bg-green-600 text-white rounded-md text-sm hover:bg-green-700 transition-colors"
+                >
+                  Install App
+                </button>
+              ) : (
+                <button
+                  id="manualInstallBtn"
+                  onClick={() => {
+                    // Manual install prompt for browsers that don't show automatic prompts
+                    if (window.matchMedia('(display-mode: standalone)').matches) {
+                      alert('App is already installed!');
+                    } else {
+                      alert('To install this app:\n\nChrome/Edge: Click the install icon in the address bar\nSafari: Tap Share > Add to Home Screen\nFirefox: Not supported');
+                    }
+                  }}
+                  className="ml-2 px-3 py-1 bg-blue-600 text-white rounded-md text-sm hover:bg-blue-700 transition-colors"
+                >
+                  Install App
+                </button>
+              )}
             </div>
             <div>
               <nav>
@@ -79,14 +95,30 @@ const Header: React.FC<HeaderProps> = ({
                 <Brand />
               </button>
               {/* Install button inline with title (Public/User view) */}
-              <button
-                id="installBtn"
-                hidden={!installAvailable}
-                onClick={onInstallClick}
-                className="ml-2 px-3 py-1 bg-green-600 text-white rounded-md text-sm"
-              >
-                Install
-              </button>
+              {installAvailable ? (
+                <button
+                  id="installBtn"
+                  onClick={onInstallClick}
+                  className="ml-2 px-3 py-1 bg-green-600 text-white rounded-md text-sm hover:bg-green-700 transition-colors"
+                >
+                  Install App
+                </button>
+              ) : (
+                <button
+                  id="manualInstallBtn"
+                  onClick={() => {
+                    // Manual install prompt for browsers that don't show automatic prompts
+                    if (window.matchMedia('(display-mode: standalone)').matches) {
+                      alert('App is already installed!');
+                    } else {
+                      alert('To install this app:\n\nChrome/Edge: Click the install icon in the address bar\nSafari: Tap Share > Add to Home Screen\nFirefox: Not supported');
+                    }
+                  }}
+                  className="ml-2 px-3 py-1 bg-blue-600 text-white rounded-md text-sm hover:bg-blue-700 transition-colors"
+                >
+                  Install App
+                </button>
+              )}
             </div>
             <nav className="flex items-center space-x-2">
               {/* Navigation buttons */}

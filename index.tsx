@@ -18,7 +18,7 @@ root.render(
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker
-      .register('/service-worker.js', { scope: '/' })
+      .register('/ck-forest-gardens-booking-app/service-worker.js', { scope: '/ck-forest-gardens-booking-app/' })
       .then(reg => {
         console.log('SW registered with scope:', reg.scope);
       })
