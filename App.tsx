@@ -118,38 +118,44 @@ const App: React.FC = () => {
     if (window.matchMedia('(display-mode: standalone)').matches) {
       setInstallAvailable(false);
       console.log('PWA already installed');
+    } else {
+      // If not installed, show install button after a delay to allow PWA criteria to be met
+      const timer = setTimeout(() => {
+        console.log('Checking PWA installability...');
+        console.log('Service Worker:', 'serviceWorker' in navigator);
+        console.log('Manifest:', document.querySelector('link[rel="manifest"]')?.getAttribute('href'));
+        console.log('HTTPS:', location.protocol === 'https:');
+        console.log('Display mode:', window.matchMedia('(display-mode: standalone)').matches);
+        
+        // If we still don't have a deferred prompt, show install button anyway for manual installation
+        if (!deferredPrompt) {
+          console.log('No deferred prompt yet, but showing install button for manual installation');
+          setInstallAvailable(true);
+        }
+      }, 2000);
+      
+      return () => clearTimeout(timer);
     }
 
-    // Add a small delay to ensure the page is fully loaded
-    const timer = setTimeout(() => {
-      window.addEventListener('beforeinstallprompt', onBIP);
-      window.addEventListener('appinstalled', onInstalled);
-      
-      // Also listen for display mode changes
-      const mediaQuery = window.matchMedia('(display-mode: standalone)');
-      const handleDisplayModeChange = (e: MediaQueryListEvent) => {
-        if (e.matches) {
-          setInstallAvailable(false);
-          setDeferredPrompt(null);
-        }
-      };
-      mediaQuery.addEventListener('change', handleDisplayModeChange);
-      
-      // Store cleanup function
-      window.cleanupPWA = () => {
-        window.removeEventListener('beforeinstallprompt', onBIP);
-        window.removeEventListener('appinstalled', onInstalled);
-        mediaQuery.removeEventListener('change', handleDisplayModeChange);
-      };
-    }, 1000);
+    window.addEventListener('beforeinstallprompt', onBIP);
+    window.addEventListener('appinstalled', onInstalled);
     
-    return () => {
-      clearTimeout(timer);
-      if (window.cleanupPWA) {
-        window.cleanupPWA();
+    // Also listen for display mode changes
+    const mediaQuery = window.matchMedia('(display-mode: standalone)');
+    const handleDisplayModeChange = (e: MediaQueryListEvent) => {
+      if (e.matches) {
+        setInstallAvailable(false);
+        setDeferredPrompt(null);
       }
     };
-  }, []);
+    mediaQuery.addEventListener('change', handleDisplayModeChange);
+    
+    return () => {
+      window.removeEventListener('beforeinstallprompt', onBIP);
+      window.removeEventListener('appinstalled', onInstalled);
+      mediaQuery.removeEventListener('change', handleDisplayModeChange);
+    };
+  }, [deferredPrompt]);
 
   const handleInstallClick = async () => {
     console.log('Install button clicked, deferredPrompt:', !!deferredPrompt);
@@ -170,20 +176,13 @@ const App: React.FC = () => {
         }
       } catch (error) {
         console.error('Error during PWA installation:', error);
-        // Don't show manual instructions, just log the error
+        // Show manual instructions as fallback
+        showManualInstallInstructions();
       }
     } else {
-      console.log('No deferred prompt available, checking if already installed');
-      // Check if already installed
-      if (window.matchMedia('(display-mode: standalone)').matches) {
-        console.log('App is already installed');
-        setInstallAvailable(false);
-      } else {
-        console.log('App not installed and no prompt available - this might be a browser limitation');
-        // For debugging, let's check what's happening
-        console.log('Service Worker registered:', 'serviceWorker' in navigator);
-        console.log('Manifest loaded:', document.querySelector('link[rel="manifest"]')?.getAttribute('href'));
-      }
+      console.log('No deferred prompt available, showing manual instructions');
+      // Show manual instructions for installation
+      showManualInstallInstructions();
     }
   };
 
