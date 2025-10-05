@@ -119,20 +119,29 @@ const App: React.FC = () => {
       setInstallAvailable(false);
       console.log('PWA already installed');
     } else {
-      // If not installed, show install button after a delay to allow PWA criteria to be met
+      // Always show install button for PWA-capable browsers
       const timer = setTimeout(() => {
         console.log('Checking PWA installability...');
         console.log('Service Worker:', 'serviceWorker' in navigator);
         console.log('Manifest:', document.querySelector('link[rel="manifest"]')?.getAttribute('href'));
         console.log('HTTPS:', location.protocol === 'https:');
         console.log('Display mode:', window.matchMedia('(display-mode: standalone)').matches);
+        console.log('User Agent:', navigator.userAgent);
         
-        // If we still don't have a deferred prompt, show install button anyway for manual installation
-        if (!deferredPrompt) {
-          console.log('No deferred prompt yet, but showing install button for manual installation');
+        // Check if browser supports PWA installation
+        const isPWACapable = 'serviceWorker' in navigator && 
+                            location.protocol === 'https:' && 
+                            document.querySelector('link[rel="manifest"]');
+        
+        if (isPWACapable) {
+          console.log('Browser is PWA-capable, showing install button');
+          setInstallAvailable(true);
+        } else {
+          console.log('Browser may not support PWA installation');
+          // Still show button for manual installation
           setInstallAvailable(true);
         }
-      }, 2000);
+      }, 1000); // Reduced delay to 1 second
       
       return () => clearTimeout(timer);
     }
@@ -155,10 +164,17 @@ const App: React.FC = () => {
       window.removeEventListener('appinstalled', onInstalled);
       mediaQuery.removeEventListener('change', handleDisplayModeChange);
     };
-  }, [deferredPrompt]);
+  }, []);
 
   const handleInstallClick = async () => {
     console.log('Install button clicked, deferredPrompt:', !!deferredPrompt);
+    
+    // First check if already installed
+    if (window.matchMedia('(display-mode: standalone)').matches) {
+      console.log('App is already installed');
+      setInstallAvailable(false);
+      return;
+    }
     
     if (deferredPrompt) {
       try {
@@ -176,12 +192,69 @@ const App: React.FC = () => {
         }
       } catch (error) {
         console.error('Error during PWA installation:', error);
-        // Show manual instructions as fallback
-        showManualInstallInstructions();
+        // Try to trigger installation programmatically
+        tryInstallProgrammatically();
       }
     } else {
-      console.log('No deferred prompt available, showing manual instructions');
-      // Show manual instructions for installation
+      console.log('No deferred prompt available, trying programmatic installation');
+      tryInstallProgrammatically();
+    }
+  };
+
+  const tryInstallProgrammatically = () => {
+    console.log('Attempting programmatic installation...');
+    
+    // Method 1: Try to trigger beforeinstallprompt by interacting with the page
+    const triggerInstallPrompt = () => {
+      // Create a temporary button that might trigger the install prompt
+      const tempButton = document.createElement('button');
+      tempButton.style.display = 'none';
+      tempButton.textContent = 'Install App';
+      document.body.appendChild(tempButton);
+      
+      // Try to click it programmatically
+      tempButton.click();
+      
+      // Clean up
+      setTimeout(() => {
+        document.body.removeChild(tempButton);
+      }, 100);
+    };
+    
+    // Method 2: Check if we can access the install prompt through other means
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.ready.then((registration) => {
+        console.log('Service worker ready:', registration);
+        
+        // Try to trigger install prompt
+        triggerInstallPrompt();
+        
+        // If still no prompt, try a different approach
+        setTimeout(() => {
+          if (!deferredPrompt) {
+            console.log('Still no deferred prompt, trying alternative approach');
+            
+            // Try to create a user gesture that might trigger the prompt
+            const userGesture = () => {
+              // Simulate user interaction
+              const event = new Event('click', { bubbles: true });
+              document.dispatchEvent(event);
+            };
+            
+            userGesture();
+            
+            // Last resort: show manual instructions
+            setTimeout(() => {
+              if (!deferredPrompt) {
+                console.log('No install prompt available, showing manual instructions');
+                showManualInstallInstructions();
+              }
+            }, 500);
+          }
+        }, 1000);
+      });
+    } else {
+      console.log('Service worker not supported');
       showManualInstallInstructions();
     }
   };
