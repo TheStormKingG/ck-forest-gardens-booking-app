@@ -102,46 +102,33 @@ const App: React.FC = () => {
 
   // Wire up beforeinstallprompt → show the Install button in Header
   useEffect(() => {
+    console.log('=== PWA INSTALLATION SETUP ===');
+    
     const onBIP = (e: Event) => {
+      console.log('beforeinstallprompt event fired!');
       e.preventDefault();
       setDeferredPrompt(e as BeforeInstallPromptEvent);
       setInstallAvailable(true);
-      console.log('PWA install prompt available', e);
     };
+    
     const onInstalled = () => {
+      console.log('App installed successfully!');
       setInstallAvailable(false);
       setDeferredPrompt(null);
-      console.log('PWA installed successfully');
     };
 
     // Check if already installed
     if (window.matchMedia('(display-mode: standalone)').matches) {
+      console.log('App is already installed');
       setInstallAvailable(false);
-      console.log('PWA already installed');
     } else {
-      // Always show install button for PWA-capable browsers
+      console.log('App not installed, setting up install button');
+      
+      // Always show install button after a short delay
       const timer = setTimeout(() => {
-        console.log('Checking PWA installability...');
-        console.log('Service Worker:', 'serviceWorker' in navigator);
-        console.log('Manifest:', document.querySelector('link[rel="manifest"]')?.getAttribute('href'));
-        console.log('HTTPS:', location.protocol === 'https:');
-        console.log('Display mode:', window.matchMedia('(display-mode: standalone)').matches);
-        console.log('User Agent:', navigator.userAgent);
-        
-        // Check if browser supports PWA installation
-        const isPWACapable = 'serviceWorker' in navigator && 
-                            location.protocol === 'https:' && 
-                            document.querySelector('link[rel="manifest"]');
-        
-        if (isPWACapable) {
-          console.log('Browser is PWA-capable, showing install button');
-          setInstallAvailable(true);
-        } else {
-          console.log('Browser may not support PWA installation');
-          // Still show button for manual installation
-          setInstallAvailable(true);
-        }
-      }, 1000); // Reduced delay to 1 second
+        console.log('Showing install button');
+        setInstallAvailable(true);
+      }, 500);
       
       return () => clearTimeout(timer);
     }
@@ -149,55 +136,54 @@ const App: React.FC = () => {
     window.addEventListener('beforeinstallprompt', onBIP);
     window.addEventListener('appinstalled', onInstalled);
     
-    // Also listen for display mode changes
-    const mediaQuery = window.matchMedia('(display-mode: standalone)');
-    const handleDisplayModeChange = (e: MediaQueryListEvent) => {
-      if (e.matches) {
-        setInstallAvailable(false);
-        setDeferredPrompt(null);
-      }
-    };
-    mediaQuery.addEventListener('change', handleDisplayModeChange);
-    
     return () => {
       window.removeEventListener('beforeinstallprompt', onBIP);
       window.removeEventListener('appinstalled', onInstalled);
-      mediaQuery.removeEventListener('change', handleDisplayModeChange);
     };
   }, []);
 
   const handleInstallClick = async () => {
-    console.log('Install button clicked, deferredPrompt:', !!deferredPrompt);
+    console.log('=== INSTALL BUTTON CLICKED ===');
+    console.log('deferredPrompt available:', !!deferredPrompt);
+    console.log('installAvailable:', installAvailable);
     
-    // First check if already installed
-    if (window.matchMedia('(display-mode: standalone)').matches) {
-      console.log('App is already installed');
-      setInstallAvailable(false);
-      return;
-    }
-    
-    if (deferredPrompt) {
-      try {
-        console.log('Triggering PWA install prompt');
-        await deferredPrompt.prompt();
-        const choiceResult = await deferredPrompt.userChoice;
-        console.log('User choice:', choiceResult.outcome);
-        
-        if (choiceResult.outcome === 'accepted') {
-          console.log('User accepted PWA installation');
-          setInstallAvailable(false);
-          setDeferredPrompt(null);
-        } else {
-          console.log('User dismissed PWA installation');
-        }
-      } catch (error) {
-        console.error('Error during PWA installation:', error);
-        // Try to trigger installation programmatically
-        tryInstallProgrammatically();
+    try {
+      // First check if already installed
+      if (window.matchMedia('(display-mode: standalone)').matches) {
+        console.log('App is already installed');
+        setInstallAvailable(false);
+        alert('App is already installed!');
+        return;
       }
-    } else {
-      console.log('No deferred prompt available, trying programmatic installation');
-      tryInstallProgrammatically();
+      
+      if (deferredPrompt) {
+        console.log('Using deferred prompt for installation');
+        try {
+          await deferredPrompt.prompt();
+          const choiceResult = await deferredPrompt.userChoice;
+          console.log('User choice:', choiceResult.outcome);
+          
+          if (choiceResult.outcome === 'accepted') {
+            console.log('User accepted PWA installation');
+            setInstallAvailable(false);
+            setDeferredPrompt(null);
+          } else {
+            console.log('User dismissed PWA installation');
+          }
+        } catch (error) {
+          console.error('Error during deferred prompt:', error);
+          showManualInstallInstructions();
+        }
+      } else {
+        console.log('No deferred prompt available');
+        console.log('Attempting alternative installation methods...');
+        
+        // Simple fallback - just show instructions for now
+        showManualInstallInstructions();
+      }
+    } catch (error) {
+      console.error('Error in handleInstallClick:', error);
+      alert('Installation error: ' + error.message);
     }
   };
 
