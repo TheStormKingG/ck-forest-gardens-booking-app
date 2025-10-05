@@ -1,10 +1,11 @@
 // /service-worker.js
-const CACHE_NAME = 'app-shell-v2'; // bump to invalidate old assets
+const CACHE_NAME = 'ck-forest-gardens-v3'; // bump to invalidate old assets
 const ASSETS = [
   // Static assets that rarely change. Replace to match your build output:
   '/ck-forest-gardens-booking-app/manifest.json',
   '/ck-forest-gardens-booking-app/icons/icon-192.png',
   '/ck-forest-gardens-booking-app/icons/icon-512.png',
+  '/ck-forest-gardens-booking-app/index.html',
   // Add your compiled JS bundle path(s) below (example):
   // '/index.js'            // if you bundled to index.js
   // '/assets/index-abc123.js', '/assets/vendor-xyz456.js' // if using Vite

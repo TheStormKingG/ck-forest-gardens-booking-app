@@ -106,23 +106,82 @@ const App: React.FC = () => {
       e.preventDefault();
       setDeferredPrompt(e as BeforeInstallPromptEvent);
       setInstallAvailable(true);
+      console.log('PWA install prompt available');
     };
-    const onInstalled = () => setInstallAvailable(false);
+    const onInstalled = () => {
+      setInstallAvailable(false);
+      setDeferredPrompt(null);
+      console.log('PWA installed successfully');
+    };
+
+    // Check if already installed
+    if (window.matchMedia('(display-mode: standalone)').matches) {
+      setInstallAvailable(false);
+      console.log('PWA already installed');
+    }
 
     window.addEventListener('beforeinstallprompt', onBIP);
     window.addEventListener('appinstalled', onInstalled);
+    
+    // Also listen for display mode changes
+    const mediaQuery = window.matchMedia('(display-mode: standalone)');
+    const handleDisplayModeChange = (e: MediaQueryListEvent) => {
+      if (e.matches) {
+        setInstallAvailable(false);
+        setDeferredPrompt(null);
+      }
+    };
+    mediaQuery.addEventListener('change', handleDisplayModeChange);
+    
     return () => {
       window.removeEventListener('beforeinstallprompt', onBIP);
       window.removeEventListener('appinstalled', onInstalled);
+      mediaQuery.removeEventListener('change', handleDisplayModeChange);
     };
   }, []);
 
   const handleInstallClick = async () => {
-    if (!deferredPrompt) return;
-    await deferredPrompt.prompt();
-    await deferredPrompt.userChoice;
-    setDeferredPrompt(null);
-    setInstallAvailable(false);
+    if (deferredPrompt) {
+      try {
+        console.log('Triggering PWA install prompt');
+        await deferredPrompt.prompt();
+        const choiceResult = await deferredPrompt.userChoice;
+        console.log('User choice:', choiceResult.outcome);
+        
+        if (choiceResult.outcome === 'accepted') {
+          console.log('User accepted PWA installation');
+        } else {
+          console.log('User dismissed PWA installation');
+        }
+        
+        setDeferredPrompt(null);
+        setInstallAvailable(false);
+      } catch (error) {
+        console.error('Error during PWA installation:', error);
+        // Fallback to manual instructions
+        showManualInstallInstructions();
+      }
+    } else {
+      // No deferred prompt available, show manual instructions
+      showManualInstallInstructions();
+    }
+  };
+
+  const showManualInstallInstructions = () => {
+    const userAgent = navigator.userAgent.toLowerCase();
+    let instructions = '';
+    
+    if (userAgent.includes('chrome') || userAgent.includes('edge')) {
+      instructions = 'To install this app:\n\n1. Look for the install icon (⬇️) in your browser\'s address bar\n2. Click the install icon\n3. Follow the installation prompts\n\nIf you don\'t see the install icon, try:\n- Refreshing the page\n- Using Chrome or Edge browser\n- Making sure you\'re not in incognito mode';
+    } else if (userAgent.includes('safari')) {
+      instructions = 'To install this app on Safari:\n\n1. Tap the Share button (📤) at the bottom\n2. Scroll down and tap "Add to Home Screen"\n3. Tap "Add" to confirm\n\nNote: This works on iPhone/iPad Safari';
+    } else if (userAgent.includes('firefox')) {
+      instructions = 'Firefox doesn\'t support PWA installation.\n\nPlease use Chrome, Edge, or Safari for the best experience.';
+    } else {
+      instructions = 'To install this app:\n\nChrome/Edge: Look for the install icon in the address bar\nSafari: Tap Share > Add to Home Screen\nFirefox: Not supported\n\nMake sure you\'re using a supported browser.';
+    }
+    
+    alert(instructions);
   };
 
   const navigate = (next: string) => {

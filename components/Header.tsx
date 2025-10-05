@@ -64,14 +64,7 @@ const Header: React.FC<HeaderProps> = ({
               ) : (
                 <button
                   id="manualInstallBtn"
-                  onClick={() => {
-                    // Manual install prompt for browsers that don't show automatic prompts
-                    if (window.matchMedia('(display-mode: standalone)').matches) {
-                      alert('App is already installed!');
-                    } else {
-                      alert('To install this app:\n\nChrome/Edge: Click the install icon in the address bar\nSafari: Tap Share > Add to Home Screen\nFirefox: Not supported');
-                    }
-                  }}
+                  onClick={onInstallClick}
                   className="px-2 py-1 bg-blue-600 text-white rounded text-xs sm:text-sm hover:bg-blue-700 transition-colors"
                 >
                   Install
@@ -107,14 +100,7 @@ const Header: React.FC<HeaderProps> = ({
               ) : (
                 <button
                   id="manualInstallBtn"
-                  onClick={() => {
-                    // Manual install prompt for browsers that don't show automatic prompts
-                    if (window.matchMedia('(display-mode: standalone)').matches) {
-                      alert('App is already installed!');
-                    } else {
-                      alert('To install this app:\n\nChrome/Edge: Click the install icon in the address bar\nSafari: Tap Share > Add to Home Screen\nFirefox: Not supported');
-                    }
-                  }}
+                  onClick={onInstallClick}
                   className="px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700 transition-colors"
                 >
                   Install App
