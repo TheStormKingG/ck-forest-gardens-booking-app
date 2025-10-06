@@ -11,7 +11,7 @@ import AdminPage from './pages/AdminPage';
 import CalendarPage from './pages/CalendarPage';
 import GamificationPage from './pages/GamificationPage';
 import { api } from './services/apiMock';
-import { getGeneralSettings, getLogoSettings } from './src/services/settings';
+import { getGeneralSettings, getLogoSettings } from './services/settings'; // <-- fixed path
 
 type BeforeInstallPromptEvent = Event & {
   prompt: () => Promise<void>;
@@ -44,7 +44,7 @@ const App: React.FC = () => {
           setPage('admin');
           // Restore admin tab if available
           if (savedAdminTab) {
-            // Pass the saved tab to AdminPage via a custom prop or state
+            // @ts-ignore
             window.adminTab = savedAdminTab;
           }
         }
@@ -68,11 +68,9 @@ const App: React.FC = () => {
   useEffect(() => {
     const fetchSettings = async () => {
       try {
-        // Add cache-busting timestamp to ensure fresh data
         const timestamp = Date.now();
         console.log(`Fetching settings with timestamp: ${timestamp}`);
         
-        // Try Supabase first
         const [generalData, logoData] = await Promise.all([
           getGeneralSettings(),
           getLogoSettings()
@@ -88,7 +86,6 @@ const App: React.FC = () => {
         });
       } catch (error) {
         console.error('Failed to load settings from Supabase:', error);
-        // Don't fallback to mock API - just set empty settings
         setSettings({
           logo: null,
           physical_address: '',
@@ -100,42 +97,35 @@ const App: React.FC = () => {
     fetchSettings();
   }, []);
 
-  // Wire up beforeinstallprompt → show the Install button in Header
+  // PWA: register listeners and only show Install button when BIP fires
   useEffect(() => {
     console.log('=== PWA INSTALLATION SETUP ===');
-    
+
     const onBIP = (e: Event) => {
       console.log('beforeinstallprompt event fired!');
       e.preventDefault();
       setDeferredPrompt(e as BeforeInstallPromptEvent);
-      setInstallAvailable(true);
+      setInstallAvailable(true); // show button only when prompt is available
     };
-    
+
     const onInstalled = () => {
       console.log('App installed successfully!');
       setInstallAvailable(false);
       setDeferredPrompt(null);
     };
 
-    // Check if already installed
-    if (window.matchMedia('(display-mode: standalone)').matches) {
-      console.log('App is already installed');
-      setInstallAvailable(false);
-    } else {
-      console.log('App not installed, setting up install button');
-      
-      // Always show install button after a short delay
-      const timer = setTimeout(() => {
-        console.log('Showing install button');
-        setInstallAvailable(true);
-      }, 500);
-      
-      return () => clearTimeout(timer);
-    }
-
     window.addEventListener('beforeinstallprompt', onBIP);
     window.addEventListener('appinstalled', onInstalled);
-    
+
+    // Hide button if already installed (Chrome + iOS Safari)
+    const isStandalone =
+      window.matchMedia('(display-mode: standalone)').matches ||
+      (navigator as any).standalone === true;
+
+    if (isStandalone) {
+      setInstallAvailable(false);
+    }
+
     return () => {
       window.removeEventListener('beforeinstallprompt', onBIP);
       window.removeEventListener('appinstalled', onInstalled);
@@ -144,103 +134,34 @@ const App: React.FC = () => {
 
   const handleInstallClick = async () => {
     console.log('=== INSTALL BUTTON CLICKED ===');
-    console.log('deferredPrompt available:', !!deferredPrompt);
-    console.log('installAvailable:', installAvailable);
-    
-    try {
-      // First check if already installed
-      if (window.matchMedia('(display-mode: standalone)').matches) {
-        console.log('App is already installed');
-        setInstallAvailable(false);
-        alert('App is already installed!');
-        return;
-      }
-      
-      if (deferredPrompt) {
-        console.log('Using deferred prompt for installation');
-        try {
-          await deferredPrompt.prompt();
-          const choiceResult = await deferredPrompt.userChoice;
-          console.log('User choice:', choiceResult.outcome);
-          
-          if (choiceResult.outcome === 'accepted') {
-            console.log('User accepted PWA installation');
-            setInstallAvailable(false);
-            setDeferredPrompt(null);
-          } else {
-            console.log('User dismissed PWA installation');
-          }
-        } catch (error) {
-          console.error('Error during deferred prompt:', error);
-          showManualInstallInstructions();
-        }
-      } else {
-        console.log('No deferred prompt available');
-        console.log('Attempting alternative installation methods...');
-        
-        // Simple fallback - just show instructions for now
-        showManualInstallInstructions();
-      }
-    } catch (error) {
-      console.error('Error in handleInstallClick:', error);
-      alert('Installation error: ' + error.message);
-    }
-  };
+    const isStandalone =
+      window.matchMedia('(display-mode: standalone)').matches ||
+      (navigator as any).standalone === true;
 
-  const tryInstallProgrammatically = () => {
-    console.log('Attempting programmatic installation...');
-    
-    // Method 1: Try to trigger beforeinstallprompt by interacting with the page
-    const triggerInstallPrompt = () => {
-      // Create a temporary button that might trigger the install prompt
-      const tempButton = document.createElement('button');
-      tempButton.style.display = 'none';
-      tempButton.textContent = 'Install App';
-      document.body.appendChild(tempButton);
-      
-      // Try to click it programmatically
-      tempButton.click();
-      
-      // Clean up
-      setTimeout(() => {
-        document.body.removeChild(tempButton);
-      }, 100);
-    };
-    
-    // Method 2: Check if we can access the install prompt through other means
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.ready.then((registration) => {
-        console.log('Service worker ready:', registration);
-        
-        // Try to trigger install prompt
-        triggerInstallPrompt();
-        
-        // If still no prompt, try a different approach
-        setTimeout(() => {
-          if (!deferredPrompt) {
-            console.log('Still no deferred prompt, trying alternative approach');
-            
-            // Try to create a user gesture that might trigger the prompt
-            const userGesture = () => {
-              // Simulate user interaction
-              const event = new Event('click', { bubbles: true });
-              document.dispatchEvent(event);
-            };
-            
-            userGesture();
-            
-            // Last resort: show manual instructions
-            setTimeout(() => {
-              if (!deferredPrompt) {
-                console.log('No install prompt available, showing manual instructions');
-                showManualInstallInstructions();
-              }
-            }, 500);
-          }
-        }, 1000);
-      });
-    } else {
-      console.log('Service worker not supported');
+    if (isStandalone) {
+      console.log('App is already installed');
+      setInstallAvailable(false);
+      setDeferredPrompt(null);
+      alert('App is already installed!');
+      return;
+    }
+
+    if (!deferredPrompt) {
+      console.log('No deferred prompt available — showing manual instructions');
+      showManualInstallInstructions();
+      return;
+    }
+
+    try {
+      await deferredPrompt.prompt();
+      const choiceResult = await deferredPrompt.userChoice;
+      console.log('User choice:', choiceResult.outcome);
+
+      // After calling prompt(), Chrome allows it only once.
+      setDeferredPrompt(null);
+      setInstallAvailable(false);
+    } catch (error: any) {
+      console.error('Error during install prompt:', error);
       showManualInstallInstructions();
     }
   };
@@ -250,13 +171,16 @@ const App: React.FC = () => {
     let instructions = '';
     
     if (userAgent.includes('chrome') || userAgent.includes('edge')) {
-      instructions = 'To install this app:\n\n1. Look for the install icon (⬇️) in your browser\'s address bar\n2. Click the install icon\n3. Follow the installation prompts\n\nIf you don\'t see the install icon, try:\n- Refreshing the page\n- Using Chrome or Edge browser\n- Making sure you\'re not in incognito mode';
+      instructions =
+        'To install this app:\n\n1. Look for the install icon (⬇️) in your browser\'s address bar\n2. Click the install icon\n3. Follow the installation prompts\n\nIf you don\'t see the install icon, try:\n- Refreshing the page\n- Using Chrome or Edge browser\n- Making sure you\'re not in incognito mode';
     } else if (userAgent.includes('safari')) {
-      instructions = 'To install this app on Safari:\n\n1. Tap the Share button (📤) at the bottom\n2. Scroll down and tap "Add to Home Screen"\n3. Tap "Add" to confirm\n\nNote: This works on iPhone/iPad Safari';
+      instructions =
+        'To install this app on Safari:\n\n1. Tap the Share button (📤)\n2. Scroll down and tap "Add to Home Screen"\n3. Tap "Add" to confirm';
     } else if (userAgent.includes('firefox')) {
-      instructions = 'Firefox doesn\'t support PWA installation.\n\nPlease use Chrome, Edge, or Safari for the best experience.';
+      instructions = 'Firefox does not support PWA installation. Please use Chrome, Edge, or Safari.';
     } else {
-      instructions = 'To install this app:\n\nChrome/Edge: Look for the install icon in the address bar\nSafari: Tap Share > Add to Home Screen\nFirefox: Not supported\n\nMake sure you\'re using a supported browser.';
+      instructions =
+        'To install this app:\n\nChrome/Edge: Click the install icon in the address bar\nSafari: Share → Add to Home Screen\nFirefox: Not supported';
     }
     
     alert(instructions);
@@ -264,10 +188,8 @@ const App: React.FC = () => {
 
   const navigate = (next: string) => {
     setPage(next);
-    // Save current page to localStorage for persistence
     localStorage.setItem('currentPage', next);
     
-    // Update navigation history
     const newHistory = history.slice(0, historyIndex + 1);
     newHistory.push(next);
     setHistory(newHistory);
@@ -321,26 +243,19 @@ const App: React.FC = () => {
   };
 
   const handleSettingsChange = async (updatedSettings: Partial<AppSettings>) => {
-    // If logo was updated, clear it first to force refresh
     if (updatedSettings.logo !== undefined) {
       setSettings(prev => (prev ? { ...prev, logo: null } : null));
-      
       try {
         const logoData = await getLogoSettings();
         if (logoData) {
           const newLogo = logoData.logo_data || logoData.logo_url || null;
-          setSettings(prev => (prev ? { 
-            ...prev, 
-            logo: newLogo 
-          } : null));
-          // Update cache key to force logo refresh
+          setSettings(prev => (prev ? { ...prev, logo: newLogo } : null));
           setLogoCacheKey(Date.now());
         }
       } catch (error) {
         console.error('Failed to refresh logo from Supabase:', error);
       }
     } else {
-      // For non-logo updates, just update normally
       setSettings(prev => (prev ? { ...prev, ...updatedSettings } : null));
     }
   };
@@ -380,10 +295,8 @@ const App: React.FC = () => {
           currentPage={page}
           logo={settings?.logo || null}
           logoCacheKey={logoCacheKey}
-          // NEW: pass install controls to render the button inline with the title
           installAvailable={installAvailable}
           onInstallClick={handleInstallClick}
-          // Navigation history
           history={history}
           onBack={historyIndex > 0 ? handleBack : undefined}
           onForward={historyIndex < history.length - 1 ? handleForward : undefined}
