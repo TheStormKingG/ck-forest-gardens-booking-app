@@ -220,7 +220,8 @@ const BookingFormPage: React.FC<BookingFormPageProps> = ({ navigate }) => {
         check_in_date: checkinDate.toISOString().slice(0, 10), // yyyy-mm-dd
         adults: parseInt(formData.adults, 10),
         children: parseInt(formData.children, 10),
-        package_id: selectedPackage.id, // assumes your selectedPackage has an id
+        package_id: selectedPackage.id, // Keep for reference if needed
+        package_name: selectedPackage.name, // Store the package name
         options: {
           meals: addons.meals,
           transportation: addons.transportation,

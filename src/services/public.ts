@@ -23,13 +23,13 @@ export async function uploadReceipt(file: File) {
 export async function createBooking(payload: {
   full_name: string; email: string; phone?: string;
   check_in_date: string; adults: number; children: number;
-  package_id: string; options?: any; nature_preference?: string;
+  package_id: string; package_name: string; options?: any; nature_preference?: string;
   receipt_url?: string; status?: string;
   price_per_person?: number; subtotal?: number; deposit_due?: number;
 }) {
   // Map the payload to match the actual database schema
   const dbPayload = {
-    package: payload.package_id, // Schema uses 'package' not 'package_id'
+    package: payload.package_name, // Store the package name instead of ID
     checkin_date: payload.check_in_date,
     full_name: payload.full_name,
     email: payload.email,

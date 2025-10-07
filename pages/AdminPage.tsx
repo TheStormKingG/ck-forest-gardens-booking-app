@@ -2,7 +2,6 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 // FIX: Aliased imported 'AdminPage' enum to 'AdminPageEnum' to avoid conflict with the component name.
 import { Booking, BookingStatus, AdminPage as AdminPageEnum, Package, User, AppSettings } from '../types';
 import { api } from '../services/apiMock';
-import { PACKAGES } from '../constants';
 import { listPackages } from '../src/services/public';
 import { adminUpsertPackage, adminDeletePackage } from '../src/services/admin';
 import { getGeneralSettings, upsertGeneralSettings, getLogoSettings, upsertLogoSettings, getPasswordSettings, upsertPasswordSettings } from '../src/services/settings';
@@ -246,12 +245,6 @@ const DeleteConfirmationModal: React.FC<{
 
 
 // --- TAB COMPONENTS ---
-// Helper to display human-friendly package titles on admin views
-const resolvePackageTitle = (storedPackage: string | undefined) => {
-  if (!storedPackage) return 'Package';
-  const match = PACKAGES.find(p => p.id === storedPackage);
-  return match ? match.name : storedPackage;
-};
 
 const BookingTrendChart: React.FC<{ data: { month: string, bookings: number }[] }> = ({ data }) => {
   if (!data || data.length < 2) {
@@ -425,7 +418,7 @@ const QueueView: React.FC = () => {
       email: r.email,
       phone: r.phone,
       checkinDate: r.checkin_date || r.check_in_date,
-      package: resolvePackageTitle(r.package || r.package_name || r.packages?.title),
+      package: r.package || r.package_name || 'Package',
       adults: r.adults ?? 0,
       children: r.children ?? 0,
       wantsMeals: r.wants_meals ?? false,
@@ -523,7 +516,7 @@ const ManagementCalendarView: React.FC = () => {
       email: r.email,
       phone: r.phone,
       checkinDate: r.checkin_date || r.check_in_date,
-      package: resolvePackageTitle(r.package || r.package_name || r.packages?.title),
+      package: r.package || r.package_name || 'Package',
       adults: r.adults ?? 0,
       children: r.children ?? 0,
       wantsMeals: r.wants_meals ?? false,
