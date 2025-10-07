@@ -11,7 +11,7 @@ import AdminPage from './pages/AdminPage';
 import CalendarPage from './pages/CalendarPage';
 import GamificationPage from './pages/GamificationPage';
 import { api } from './services/apiMock';
-import { getGeneralSettings, getLogoSettings } from './services/settings'; // <-- fixed path
+import { getGeneralSettings, getLogoSettings } from './src/services/settings';
 
 type BeforeInstallPromptEvent = Event & {
   prompt: () => Promise<void>;
