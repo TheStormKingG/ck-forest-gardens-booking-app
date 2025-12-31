@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { User } from '../types';
 
 interface HeaderProps {
@@ -31,121 +31,194 @@ const Header: React.FC<HeaderProps> = ({
   onForward,
 }) => {
   const isAdminView = currentUser?.role === 'Management';
-  const textStyle = 'text-base font-semibold'; // Unified text style
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const Brand: React.FC = () => (
-    <div className="flex items-center space-x-2">
-      {logo && <img src={logo} alt="CK Forest Gardens Logo" className="h-8 sm:h-10 object-contain" />}
-      <span className="text-sm sm:text-base whitespace-nowrap">CK Forest Gardens</span>
-    </div>
-  );
+  // Navigation links - all route to 'home' since separate pages don't exist yet
+  const navigationLinks = [
+    { label: 'Home', page: 'home' },
+    { label: 'About', page: 'home' },
+    { label: 'Activities', page: 'home' },
+    { label: 'Packages', page: 'home' },
+    { label: 'Gallery', page: 'home' },
+    { label: 'Terms & Policies', page: 'home' },
+  ];
 
-  return (
-    <header className="bg-green-500 text-white shadow-md">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        {isAdminView ? (
-          // Simplified layout for Admin
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center space-x-2 min-w-0 flex-1">
-              <button onClick={() => navigate('home')} className={`${textStyle} min-w-0`}>
-                <Brand />
-              </button>
-            </div>
-            <div className="flex items-center space-x-2">
-              {/* Install button (Admin view) - only show if not installed */}
-              {installAvailable && (
-                <button
-                  id="installBtn"
-                  onClick={onInstallClick}
-                  className="px-2 py-1 bg-green-600 text-white rounded text-xs sm:text-sm hover:bg-green-700 transition-colors"
-                >
-                  Install
-                </button>
+  const handleLinkClick = (page: string) => {
+    navigate(page);
+    setMobileMenuOpen(false);
+  };
+
+  const handleAdminLogin = () => {
+    navigate('login');
+    setMobileMenuOpen(false);
+  };
+
+  // Admin view - simplified header
+  if (isAdminView) {
+    return (
+      <header className="bg-white shadow-md sticky top-0 z-40">
+        <nav className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-20">
+            <button 
+              onClick={() => navigate('home')}
+              className="flex items-center gap-3 group"
+            >
+              {logo ? (
+                <img 
+                  src={logo} 
+                  alt="CK Forest Gardens Logo" 
+                  className="w-12 h-12 rounded-full object-cover ring-2 ring-green-500 group-hover:ring-green-600 transition-all"
+                />
+              ) : (
+                <div className="w-12 h-12 rounded-full bg-green-500 flex items-center justify-center ring-2 ring-green-500 group-hover:ring-green-600 transition-all">
+                  <span className="text-white font-bold text-lg">CK</span>
+                </div>
               )}
-              <nav>
-                <button
-                  onClick={onLogout}
-                  className={`${textStyle} hover:opacity-80 transition-opacity`}
-                >
-                  Logout
-                </button>
-              </nav>
-            </div>
-          </div>
-        ) : (
-          // Single row layout for Public/User
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center space-x-2 min-w-0 flex-1">
-              <button onClick={() => navigate('home')} className={`${textStyle} min-w-0`}>
-                <Brand />
-              </button>
-            </div>
-            <nav className="flex items-center space-x-2">
-              {/* Install button (Public/User view) - only show if not installed */}
+              <div className="flex flex-col">
+                <span className="text-xl font-bold text-gray-900">CK Forest Gardens</span>
+                <span className="text-xs text-green-600">Nature's Paradise</span>
+              </div>
+            </button>
+            <nav className="flex items-center gap-4">
               {installAvailable && (
                 <button
                   id="installBtn"
                   onClick={onInstallClick}
                   className="px-3 py-1 bg-green-600 text-white rounded text-sm hover:bg-green-700 transition-colors"
                 >
-                  Install App
+                  Install
                 </button>
               )}
-              {/* Navigation buttons */}
-              <div className="flex items-center space-x-1">
-                <button
-                  onClick={onBack}
-                  disabled={!onBack}
-                  className={`w-7 h-7 flex items-center justify-center rounded-md hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors`}
-                  title="Back"
-                >
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="m15 18-6-6 6-6"/>
-                  </svg>
-                </button>
-                <button
-                  onClick={onForward}
-                  disabled={!onForward}
-                  className={`w-7 h-7 flex items-center justify-center rounded-md hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors`}
-                  title="Forward"
-                >
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="m9 18 6-6-6-6"/>
-                  </svg>
-                </button>
-                <button
-                  onClick={() => navigate('home')}
-                  className={`w-7 h-7 flex items-center justify-center rounded-md hover:bg-green-600 transition-colors`}
-                  title="Home"
-                >
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-                    <polyline points="9,22 9,12 15,12 15,22"/>
-                  </svg>
-                </button>
+              <button
+                onClick={onLogout}
+                className="font-medium transition-colors text-gray-700 hover:text-green-600"
+              >
+                Logout
+              </button>
+            </nav>
+          </div>
+        </nav>
+      </header>
+    );
+  }
+
+  // Public/User view - full navigation
+  return (
+    <header className="bg-white shadow-md sticky top-0 z-40">
+      <nav className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-20">
+          <button 
+            onClick={() => navigate('home')}
+            className="flex items-center gap-3 group"
+          >
+            {logo ? (
+              <img 
+                src={logo} 
+                alt="CK Forest Gardens Logo" 
+                className="w-12 h-12 rounded-full object-cover ring-2 ring-green-500 group-hover:ring-green-600 transition-all"
+              />
+            ) : (
+              <div className="w-12 h-12 rounded-full bg-green-500 flex items-center justify-center ring-2 ring-green-500 group-hover:ring-green-600 transition-all">
+                <span className="text-white font-bold text-lg">CK</span>
               </div>
-              
-              {/* User-specific navigation */}
-              {currentUser ? (
+            )}
+            <div className="flex flex-col">
+              <span className="text-xl font-bold text-gray-900">CK Forest Gardens</span>
+              <span className="text-xs text-green-600">Nature's Paradise</span>
+            </div>
+          </button>
+          
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex items-center gap-8">
+            {navigationLinks.map((link) => (
+              <button
+                key={link.label}
+                onClick={() => handleLinkClick(link.page)}
+                className={`font-medium transition-colors ${
+                  currentPage === link.page && link.label === 'Home'
+                    ? 'text-green-600'
+                    : 'text-gray-700 hover:text-green-600'
+                }`}
+              >
+                {link.label}
+              </button>
+            ))}
+            <button
+              onClick={handleAdminLogin}
+              className="ml-4 pl-4 border-l border-gray-300 text-gray-700 hover:text-green-600 font-medium transition-colors"
+            >
+              Admin Login
+            </button>
+          </div>
+
+          {/* Mobile Menu Button */}
+          <button 
+            className="md:hidden p-2 text-gray-700 hover:text-green-600 transition-colors"
+            aria-label="Toggle menu"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="lucide lucide-menu w-6 h-6"
+            >
+              <line x1="4" x2="20" y1="12" y2="12"></line>
+              <line x1="4" x2="20" y1="6" y2="6"></line>
+              <line x1="4" x2="20" y1="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+
+        {/* Mobile Menu */}
+        {mobileMenuOpen && (
+          <div className="md:hidden pb-4 border-t border-gray-200">
+            <div className="flex flex-col gap-2 pt-4">
+              {navigationLinks.map((link) => (
+                <button
+                  key={link.label}
+                  onClick={() => handleLinkClick(link.page)}
+                  className={`text-left px-4 py-2 font-medium transition-colors ${
+                    currentPage === link.page && link.label === 'Home'
+                      ? 'text-green-600'
+                      : 'text-gray-700 hover:text-green-600'
+                  }`}
+                >
+                  {link.label}
+                </button>
+              ))}
+              <button
+                onClick={handleAdminLogin}
+                className="text-left px-4 py-2 font-medium transition-colors text-gray-700 hover:text-green-600 border-t border-gray-200 pt-2 mt-2"
+              >
+                Admin Login
+              </button>
+              {currentUser && (
                 <>
                   <button
-                    onClick={() => navigate('my-bookings')}
-                    className={`text-sm font-semibold hover:opacity-80 transition-opacity`}
+                    onClick={() => handleLinkClick('my-bookings')}
+                    className="text-left px-4 py-2 font-medium transition-colors text-gray-700 hover:text-green-600 border-t border-gray-200 pt-2 mt-2"
                   >
                     My Bookings
                   </button>
                   <button
                     onClick={onLogout}
-                    className={`text-sm font-semibold hover:opacity-80 transition-opacity`}
+                    className="text-left px-4 py-2 font-medium transition-colors text-gray-700 hover:text-green-600"
                   >
                     Logout
                   </button>
                 </>
-              ) : null}
-            </nav>
+              )}
+            </div>
           </div>
         )}
-      </div>
+      </nav>
     </header>
   );
 };
