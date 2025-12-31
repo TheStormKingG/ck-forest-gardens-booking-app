@@ -296,7 +296,7 @@ Each detail page MUST follow this structure, in this exact order:
    - "Is there phone signal?"
 
 **Format:**
-- Use `<details>` / `<summary>` HTML for accordion-style (better UX)
+- Use accordion-style FAQ component (better UX)
 - Or simple Q&A format
 - Include internal links to policy pages where relevant
 
@@ -735,4 +735,3 @@ Full-day eco-tour in Guyana. Guided nature walks, river activities, and authenti
 **Document Version:** 1.0  
 **Last Updated:** January 2025  
 **Status:** Implementation Ready
-
