@@ -36,11 +36,9 @@ const Header: React.FC<HeaderProps> = ({
   // Navigation links - all route to 'home' since separate pages don't exist yet
   const navigationLinks = [
     { label: 'Home', page: 'home' },
-    { label: 'About', page: 'home' },
-    { label: 'Activities', page: 'home' },
     { label: 'Packages', page: 'home' },
-    { label: 'Gallery', page: 'home' },
-    { label: 'Terms & Policies', page: 'home' },
+    { label: 'Policies', page: 'home' },
+    { label: 'About', page: 'home' },
   ];
 
   const handleLinkClick = (page: string) => {
@@ -143,12 +141,6 @@ const Header: React.FC<HeaderProps> = ({
                 {link.label}
               </button>
             ))}
-            <button
-              onClick={handleAdminLogin}
-              className="ml-4 pl-4 border-l border-gray-300 text-gray-700 hover:text-green-600 font-medium transition-colors"
-            >
-              Admin Login
-            </button>
           </div>
 
           {/* Mobile Menu Button */}
@@ -193,12 +185,6 @@ const Header: React.FC<HeaderProps> = ({
                   {link.label}
                 </button>
               ))}
-              <button
-                onClick={handleAdminLogin}
-                className="text-left px-4 py-2 font-medium transition-colors text-gray-700 hover:text-green-600 border-t border-gray-200 pt-2 mt-2"
-              >
-                Admin Login
-              </button>
               {currentUser && (
                 <>
                   <button
