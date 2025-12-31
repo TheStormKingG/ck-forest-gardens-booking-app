@@ -61,7 +61,7 @@ const Footer: React.FC<FooterProps> = ({ settings, logo, onAdminLogin, navigate 
               {logo ? (
                 <img 
                   src={logo} 
-                  alt="CK Forest Gardens Logo" 
+                  alt="CK Forest Tours Logo" 
                   className="w-10 h-10 rounded-full object-cover ring-2 ring-green-500"
                 />
               ) : (
@@ -70,7 +70,7 @@ const Footer: React.FC<FooterProps> = ({ settings, logo, onAdminLogin, navigate 
                 </div>
               )}
               <div className="flex flex-col">
-                <span className="text-xl font-bold text-white">CK Forest Gardens</span>
+                <span className="text-xl font-bold text-white">CK Forest Tours</span>
                 <span className="text-xs text-green-400">Nature's Paradise</span>
               </div>
             </div>
@@ -297,7 +297,7 @@ const Footer: React.FC<FooterProps> = ({ settings, logo, onAdminLogin, navigate 
 
         {/* Copyright Section */}
         <div className="border-t border-gray-800 mt-8 pt-8 text-center">
-          <p className="text-sm text-gray-400">© 2025 CK Forest Gardens. All rights reserved.</p>
+          <p className="text-sm text-gray-400">© 2025 CK Forest Tours. All rights reserved.</p>
         </div>
       </div>
     </footer>

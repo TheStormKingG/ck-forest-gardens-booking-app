@@ -66,7 +66,7 @@ const Header: React.FC<HeaderProps> = ({
               {logo ? (
                 <img 
                   src={logo} 
-                  alt="CK Forest Gardens Logo" 
+                  alt="CK Forest Tours Logo" 
                   className="w-12 h-12 rounded-full object-cover ring-2 ring-green-500 group-hover:ring-green-600 transition-all"
                 />
               ) : (
@@ -75,7 +75,7 @@ const Header: React.FC<HeaderProps> = ({
                 </div>
               )}
               <div className="flex flex-col">
-                <span className="text-xl font-bold text-gray-900">CK Forest Gardens</span>
+                <span className="text-xl font-bold text-gray-900">CK Forest Tours</span>
                 <span className="text-xs text-green-600">Nature's Paradise</span>
               </div>
             </button>
@@ -114,7 +114,7 @@ const Header: React.FC<HeaderProps> = ({
             {logo ? (
               <img 
                 src={logo} 
-                alt="CK Forest Gardens Logo" 
+                alt="CK Forest Tours Logo" 
                 className="w-12 h-12 rounded-full object-cover ring-2 ring-green-500 group-hover:ring-green-600 transition-all"
               />
             ) : (
@@ -123,7 +123,7 @@ const Header: React.FC<HeaderProps> = ({
               </div>
             )}
             <div className="flex flex-col">
-              <span className="text-xl font-bold text-gray-900">CK Forest Gardens</span>
+              <span className="text-xl font-bold text-gray-900">CK Forest Tours</span>
               <span className="text-xs text-green-600">Nature's Paradise</span>
             </div>
           </button>

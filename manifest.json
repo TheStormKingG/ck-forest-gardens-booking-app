@@ -1,12 +1,12 @@
 {
-  "name": "CK Forest Gardens Booking",
-  "short_name": "CK Forest Gardens",
+  "name": "CK Forest Tours Booking",
+  "short_name": "CK Forest Tours",
   "start_url": "/ck-forest-gardens-booking-app/",
   "scope": "/ck-forest-gardens-booking-app/",
   "display": "standalone",
   "theme_color": "#16a34a",
   "background_color": "#f0fdf4",
-  "description": "Book your adventure at CK Forest Gardens",
+  "description": "Book your adventure at CK Forest Tours",
   "icons": [
     {
       "src": "/ck-forest-gardens-booking-app/icons/icon-192.png",
