@@ -304,7 +304,7 @@ const App: React.FC = () => {
         <main className="p-4 sm:p-6 lg:p-8 flex-grow">
           {renderPage()}
         </main>
-        <Footer settings={settings} onAdminLogin={handleAdminLogin} />
+        <Footer settings={settings} logo={settings?.logo || null} onAdminLogin={handleAdminLogin} navigate={navigate} />
       </div>
     </SelectedPackageProvider>
   );
