@@ -85,12 +85,14 @@ const HomePage: React.FC<HomePageProps> = ({ navigate }) => {
           >
             View Tours
           </button>
-          <button
-            onClick={() => navigate('booking')}
-            className="bg-white text-green-600 border-2 border-green-600 font-bold py-4 px-8 rounded-lg hover:bg-green-50 transition-colors duration-300 text-lg"
+          <a
+            href="https://wa.me/5927122534"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="bg-white text-green-600 border-2 border-green-600 font-bold py-4 px-8 rounded-lg hover:bg-green-50 transition-colors duration-300 text-lg inline-block text-center"
           >
             Plan My Trip
-          </button>
+          </a>
         </div>
       </section>
 
@@ -219,12 +221,14 @@ const HomePage: React.FC<HomePageProps> = ({ navigate }) => {
               <li>• Answers to all your questions</li>
             </ul>
           </div>
-          <button
-            onClick={() => navigate('booking')}
-            className="bg-green-600 text-white font-bold py-4 px-8 rounded-lg hover:bg-green-700 transition-colors duration-300 text-lg"
+          <a
+            href="https://wa.me/5927122534"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="bg-green-600 text-white font-bold py-4 px-8 rounded-lg hover:bg-green-700 transition-colors duration-300 text-lg inline-block text-center"
           >
             Request Custom Itinerary
-          </button>
+          </a>
           <p className="text-sm text-gray-600 mt-4">Response within 48 hours | No obligation</p>
         </div>
       </section>
