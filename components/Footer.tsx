@@ -93,23 +93,7 @@ const Footer: React.FC<FooterProps> = ({ settings, logo, onAdminLogin, navigate 
               </li>
               <li>
                 <button
-                  onClick={() => handleLinkClick('home')}
-                  className="text-sm text-gray-400 hover:text-green-400 transition-colors"
-                >
-                  About Us
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => handleLinkClick('home')}
-                  className="text-sm text-gray-400 hover:text-green-400 transition-colors"
-                >
-                  Activities
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => handleLinkClick('home')}
+                  onClick={() => handleLinkClick('packages')}
                   className="text-sm text-gray-400 hover:text-green-400 transition-colors"
                 >
                   Packages
@@ -117,15 +101,15 @@ const Footer: React.FC<FooterProps> = ({ settings, logo, onAdminLogin, navigate 
               </li>
               <li>
                 <button
-                  onClick={() => handleLinkClick('home')}
+                  onClick={() => handleLinkClick('about')}
                   className="text-sm text-gray-400 hover:text-green-400 transition-colors"
                 >
-                  Gallery
+                  About Us
                 </button>
               </li>
               <li>
                 <button
-                  onClick={() => handleLinkClick('home')}
+                  onClick={() => handleLinkClick('policies')}
                   className="text-sm text-gray-400 hover:text-green-400 transition-colors"
                 >
                   Terms & Policies

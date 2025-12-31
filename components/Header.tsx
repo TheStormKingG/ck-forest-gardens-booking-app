@@ -33,12 +33,12 @@ const Header: React.FC<HeaderProps> = ({
   const isAdminView = currentUser?.role === 'Management';
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  // Navigation links - all route to 'home' since separate pages don't exist yet
+  // Navigation links
   const navigationLinks = [
     { label: 'Home', page: 'home' },
-    { label: 'Packages', page: 'home' },
-    { label: 'Policies', page: 'home' },
-    { label: 'About', page: 'home' },
+    { label: 'Packages', page: 'packages' },
+    { label: 'Policies', page: 'policies' },
+    { label: 'About', page: 'about' },
   ];
 
   const handleLinkClick = (page: string) => {
@@ -133,7 +133,7 @@ const Header: React.FC<HeaderProps> = ({
                 key={link.label}
                 onClick={() => handleLinkClick(link.page)}
                 className={`font-medium transition-colors ${
-                  currentPage === link.page && link.label === 'Home'
+                  currentPage === link.page
                     ? 'text-green-600'
                     : 'text-gray-700 hover:text-green-600'
                 }`}
@@ -177,7 +177,7 @@ const Header: React.FC<HeaderProps> = ({
                   key={link.label}
                   onClick={() => handleLinkClick(link.page)}
                   className={`text-left px-4 py-2 font-medium transition-colors ${
-                    currentPage === link.page && link.label === 'Home'
+                    currentPage === link.page
                       ? 'text-green-600'
                       : 'text-gray-700 hover:text-green-600'
                   }`}

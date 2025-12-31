@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import HomePage from './pages/HomePage';
+import PackagesPage from './pages/PackagesPage';
+import AboutPage from './pages/AboutPage';
+import PoliciesPage from './pages/PoliciesPage';
 import BookingFormPage from './pages/BookingFormPage';
 import { SelectedPackageProvider } from './contexts/SelectedPackageContext';
 import { User, AppSettings } from './types';
@@ -264,6 +267,12 @@ const App: React.FC = () => {
     switch (page) {
       case 'home':
         return <HomePage navigate={navigate} />;
+      case 'packages':
+        return <PackagesPage navigate={navigate} />;
+      case 'about':
+        return <AboutPage navigate={navigate} />;
+      case 'policies':
+        return <PoliciesPage navigate={navigate} />;
       case 'booking':
         return <BookingFormPage navigate={navigate} />;
       case 'login':
