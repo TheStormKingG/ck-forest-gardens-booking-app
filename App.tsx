@@ -448,7 +448,7 @@ const App: React.FC = () => {
           currentPage={page}
           logo={settings?.logo || null}
           logoCacheKey={logoCacheKey}
-          installAvailable={installAvailable}
+          installAvailable={installAvailable && !isAppInstalled() && currentUser?.role === 'management'}
           onInstallClick={handleInstallClick}
           history={history}
           onBack={historyIndex > 0 ? handleBack : undefined}
