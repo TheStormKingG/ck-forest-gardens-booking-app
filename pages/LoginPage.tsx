@@ -87,12 +87,8 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
         setError('');
         
         try {
-            // Construct redirect URL - include base path for GitHub Pages
-            const basePath = '/ck-forest-gardens-booking-app';
-            const redirectPath = window.location.pathname.startsWith(basePath) 
-                ? window.location.pathname 
-                : `${basePath}${window.location.pathname}`;
-            const redirectTo = `${window.location.origin}${redirectPath}`;
+            // Construct redirect URL - site is now at root with custom domain
+            const redirectTo = `${window.location.origin}${window.location.pathname}`;
             
             const { error: signInError } = await supabase.auth.signInWithOAuth({
                 provider: 'google',
