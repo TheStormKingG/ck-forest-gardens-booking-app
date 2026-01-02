@@ -33,22 +33,21 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
                 return;
             }
             
-            // Ensure profile exists in database with management role for RLS policies
+            // Ensure profile exists in database (role is set by database default or admin, not client)
             try {
-                // Upsert profile - creates if doesn't exist, updates if exists
-                const profileData = {
-                    user_id: supabaseUser.id,
-                    email: userEmail,
-                    role: 'management'
-                };
-                
+                // Upsert profile - do NOT include role (security: prevent self-promotion)
                 const { error: profileError } = await supabase
                     .from('profiles')
-                    .upsert(profileData, { onConflict: 'user_id' });
+                    .upsert(
+                        {
+                            user_id: supabaseUser.id,
+                            email: userEmail
+                        },
+                        { onConflict: 'user_id' }
+                    );
                 
                 if (profileError) {
                     console.error('Error upserting profile:', profileError);
-                    console.error('Profile data attempted:', profileData);
                     // Continue anyway - the role check happens in frontend too
                 } else {
                     console.log('Profile created/updated successfully for user:', userEmail);
