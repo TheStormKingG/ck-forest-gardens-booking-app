@@ -29,6 +29,10 @@ const HomePage: React.FC<HomePageProps> = ({ navigate }) => {
   const { setSelectedPackage } = useSelectedPackage();
   const [packages, setPackages] = useState<Package[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  
+  // WhatsApp number: +592 633 5874 (formatted for wa.me links)
+  const whatsAppNumber = '5926335874';
+  const whatsAppLink = `https://wa.me/${whatsAppNumber}`;
 
   useEffect(() => {
     const fetchPackages = async () => {
@@ -86,7 +90,7 @@ const HomePage: React.FC<HomePageProps> = ({ navigate }) => {
             View Tours
           </button>
           <a
-            href="https://wa.me/5927122534"
+            href={whatsAppLink}
             target="_blank"
             rel="noopener noreferrer"
             className="bg-white text-green-600 border-2 border-green-600 font-bold py-4 px-8 rounded-lg hover:bg-green-50 transition-colors duration-300 text-lg inline-block text-center"
@@ -222,7 +226,7 @@ const HomePage: React.FC<HomePageProps> = ({ navigate }) => {
             </ul>
           </div>
           <a
-            href="https://wa.me/5927122534"
+            href={whatsAppLink}
             target="_blank"
             rel="noopener noreferrer"
             className="bg-green-600 text-white font-bold py-4 px-8 rounded-lg hover:bg-green-700 transition-colors duration-300 text-lg inline-block text-center"

@@ -29,6 +29,10 @@ const PackagesPage: React.FC<PackagesPageProps> = ({ navigate }) => {
   const { setSelectedPackage } = useSelectedPackage();
   const [packages, setPackages] = useState<Package[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  
+  // WhatsApp number: +592 633 5874 (formatted for wa.me links)
+  const whatsAppNumber = '5926335874';
+  const whatsAppLink = `https://wa.me/${whatsAppNumber}`;
 
   useEffect(() => {
     const fetchPackages = async () => {
@@ -97,7 +101,7 @@ const PackagesPage: React.FC<PackagesPageProps> = ({ navigate }) => {
           We can create a personalized itinerary tailored to your group's interests, timeline, and budget.
         </p>
         <a
-          href="https://wa.me/5927122534"
+          href={whatsAppLink}
           target="_blank"
           rel="noopener noreferrer"
           className="bg-green-600 text-white font-semibold py-3 px-8 rounded-lg hover:bg-green-700 transition-colors inline-block"
