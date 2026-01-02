@@ -18,16 +18,15 @@ export async function getDashboardStats(): Promise<DashboardStats> {
   const thirtyDaysFromNow = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
 
   try {
-    // Get next booking (earliest future booking)
-    const { data: nextBooking, error: nextError } = await supabase
+    // Get next booking (earliest future booking) - use array result to avoid 406
+    const { data: nextBookingArray, error: nextError } = await supabase
       .from("bookings")
       .select("checkin_date")
       .gte("checkin_date", now.toISOString())
       .order("checkin_date", { ascending: true })
-      .limit(1)
-      .single();
+      .limit(1);
 
-    if (nextError && nextError.code !== 'PGRST116') {
+    if (nextError) {
       console.error('Error fetching next booking:', nextError);
     }
 
@@ -54,7 +53,7 @@ export async function getDashboardStats(): Promise<DashboardStats> {
     }
 
     return {
-      nextBookingDate: nextBooking?.checkin_date || null,
+      nextBookingDate: nextBookingArray?.[0]?.checkin_date ?? null,
       bookingsLastMonth: lastMonthBookings?.length || 0,
       bookingsNext30Days: next30DaysBookings?.length || 0,
     };

@@ -35,35 +35,16 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
             
             // Ensure profile exists in database with management role for RLS policies
             try {
-                // First, try to get existing profile
-                const { data: existingProfile } = await supabase
-                    .from('profiles')
-                    .select('user_id')
-                    .eq('user_id', supabaseUser.id)
-                    .single();
-                
-                // If profile doesn't exist, create it. If it exists, update it.
+                // Upsert profile - creates if doesn't exist, updates if exists
                 const profileData = {
                     user_id: supabaseUser.id,
                     email: userEmail,
                     role: 'management'
                 };
                 
-                let profileError;
-                if (existingProfile) {
-                    // Update existing profile
-                    const { error } = await supabase
-                        .from('profiles')
-                        .update(profileData)
-                        .eq('user_id', supabaseUser.id);
-                    profileError = error;
-                } else {
-                    // Insert new profile
-                    const { error } = await supabase
-                        .from('profiles')
-                        .insert([profileData]);
-                    profileError = error;
-                }
+                const { error: profileError } = await supabase
+                    .from('profiles')
+                    .upsert(profileData, { onConflict: 'user_id' });
                 
                 if (profileError) {
                     console.error('Error upserting profile:', profileError);
