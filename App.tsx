@@ -33,6 +33,7 @@ const App: React.FC = () => {
   // PWA install state
   const [installAvailable, setInstallAvailable] = useState<boolean>(false);
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
+  const [showInstallModal, setShowInstallModal] = useState<boolean>(false);
 
   // Restore session on page reload
   useEffect(() => {
@@ -101,6 +102,14 @@ const App: React.FC = () => {
     fetchSettings();
   }, []);
 
+  // Helper function to check if app is installed
+  const isAppInstalled = (): boolean => {
+    return (
+      window.matchMedia('(display-mode: standalone)').matches ||
+      (navigator as any).standalone === true
+    );
+  };
+
   // PWA: register listeners and only show Install button when BIP fires
   useEffect(() => {
     console.log('=== PWA INSTALLATION SETUP ===');
@@ -109,24 +118,24 @@ const App: React.FC = () => {
       console.log('beforeinstallprompt event fired!');
       e.preventDefault();
       setDeferredPrompt(e as BeforeInstallPromptEvent);
-      setInstallAvailable(true); // show button only when prompt is available
+      // Only set install available if app is not already installed
+      if (!isAppInstalled()) {
+        setInstallAvailable(true);
+      }
     };
 
     const onInstalled = () => {
       console.log('App installed successfully!');
       setInstallAvailable(false);
       setDeferredPrompt(null);
+      setShowInstallModal(false);
     };
 
     window.addEventListener('beforeinstallprompt', onBIP);
     window.addEventListener('appinstalled', onInstalled);
 
     // Hide button if already installed (Chrome + iOS Safari)
-    const isStandalone =
-      window.matchMedia('(display-mode: standalone)').matches ||
-      (navigator as any).standalone === true;
-
-    if (isStandalone) {
+    if (isAppInstalled()) {
       setInstallAvailable(false);
     }
 
@@ -138,11 +147,8 @@ const App: React.FC = () => {
 
   const handleInstallClick = async () => {
     console.log('=== INSTALL BUTTON CLICKED ===');
-    const isStandalone =
-      window.matchMedia('(display-mode: standalone)').matches ||
-      (navigator as any).standalone === true;
-
-    if (isStandalone) {
+    
+    if (isAppInstalled()) {
       console.log('App is already installed');
       setInstallAvailable(false);
       setDeferredPrompt(null);
@@ -164,10 +170,45 @@ const App: React.FC = () => {
       // After calling prompt(), Chrome allows it only once.
       setDeferredPrompt(null);
       setInstallAvailable(false);
+      setShowInstallModal(false);
     } catch (error: any) {
       console.error('Error during install prompt:', error);
       showManualInstallInstructions();
     }
+  };
+
+  const handleInstallFromModal = async () => {
+    if (!deferredPrompt) {
+      showManualInstallInstructions();
+      setShowInstallModal(false);
+      return;
+    }
+
+    try {
+      await deferredPrompt.prompt();
+      const choiceResult = await deferredPrompt.userChoice;
+      console.log('User choice:', choiceResult.outcome);
+      
+      setDeferredPrompt(null);
+      setInstallAvailable(false);
+      setShowInstallModal(false);
+      
+      if (choiceResult.outcome === 'accepted') {
+        // User accepted, modal will close when appinstalled fires
+      } else {
+        // User dismissed, remember this choice
+        localStorage.setItem('installModalDismissed', 'true');
+      }
+    } catch (error: any) {
+      console.error('Error during install prompt:', error);
+      showManualInstallInstructions();
+      setShowInstallModal(false);
+    }
+  };
+
+  const handleDismissInstallModal = () => {
+    setShowInstallModal(false);
+    localStorage.setItem('installModalDismissed', 'true');
   };
 
   const showManualInstallInstructions = () => {
@@ -232,6 +273,18 @@ const App: React.FC = () => {
     if (user.role === 'management') {
       navigate('admin');
       localStorage.setItem('currentPage', 'admin');
+      
+      // Show install modal for admin users if app is not installed
+      if (!isAppInstalled()) {
+        // Check if user has dismissed the modal before (don't show again)
+        const installModalDismissed = localStorage.getItem('installModalDismissed');
+        if (!installModalDismissed) {
+          // Small delay to ensure page navigation completes
+          setTimeout(() => {
+            setShowInstallModal(true);
+          }, 500);
+        }
+      }
     } else {
       navigate('my-bookings');
       localStorage.setItem('currentPage', 'my-bookings');
@@ -302,9 +355,47 @@ const App: React.FC = () => {
     }
   };
 
+  // Install Modal Component
+  const InstallModal: React.FC = () => {
+    if (!showInstallModal) return null;
+
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div className="bg-white rounded-xl shadow-2xl max-w-md w-full p-6">
+          <div className="flex items-center justify-center mb-4">
+            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
+              <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+              </svg>
+            </div>
+          </div>
+          <h2 className="text-2xl font-bold text-gray-900 text-center mb-4">Install CK Forest Tours</h2>
+          <p className="text-gray-700 text-center mb-6">
+            Install our app for quick access to the admin panel and better performance on your device.
+          </p>
+          <div className="flex gap-3">
+            <button
+              onClick={handleInstallFromModal}
+              className="flex-1 bg-green-600 text-white font-semibold py-3 px-4 rounded-lg hover:bg-green-700 transition-colors"
+            >
+              Install Now
+            </button>
+            <button
+              onClick={handleDismissInstallModal}
+              className="flex-1 bg-gray-200 text-gray-700 font-semibold py-3 px-4 rounded-lg hover:bg-gray-300 transition-colors"
+            >
+              Maybe Later
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <SelectedPackageProvider>
       <div className="min-h-screen bg-green-50 flex flex-col">
+        <InstallModal />
         <Header
           currentUser={currentUser}
           onLogout={handleLogout}
