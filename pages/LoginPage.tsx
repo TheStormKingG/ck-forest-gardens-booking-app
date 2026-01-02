@@ -35,20 +35,43 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
             
             // Ensure profile exists in database with Management role for RLS policies
             try {
-                const { error: profileError } = await supabase
+                // First, try to get existing profile
+                const { data: existingProfile } = await supabase
                     .from('profiles')
-                    .upsert({
-                        user_id: supabaseUser.id,
-                        email: userEmail,
-                        role: 'Management',
-                        full_name: supabaseUser.user_metadata?.full_name || supabaseUser.user_metadata?.name || 'Admin User'
-                    }, {
-                        onConflict: 'user_id'
-                    });
+                    .select('user_id')
+                    .eq('user_id', supabaseUser.id)
+                    .single();
+                
+                // If profile doesn't exist, create it. If it exists, update it.
+                const profileData = {
+                    user_id: supabaseUser.id,
+                    email: userEmail,
+                    role: 'Management',
+                    full_name: supabaseUser.user_metadata?.full_name || supabaseUser.user_metadata?.name || 'Admin User'
+                };
+                
+                let profileError;
+                if (existingProfile) {
+                    // Update existing profile
+                    const { error } = await supabase
+                        .from('profiles')
+                        .update(profileData)
+                        .eq('user_id', supabaseUser.id);
+                    profileError = error;
+                } else {
+                    // Insert new profile
+                    const { error } = await supabase
+                        .from('profiles')
+                        .insert([profileData]);
+                    profileError = error;
+                }
                 
                 if (profileError) {
                     console.error('Error upserting profile:', profileError);
+                    console.error('Profile data attempted:', profileData);
                     // Continue anyway - the role check happens in frontend too
+                } else {
+                    console.log('Profile created/updated successfully for user:', userEmail);
                 }
             } catch (profileErr) {
                 console.error('Error creating/updating profile:', profileErr);
