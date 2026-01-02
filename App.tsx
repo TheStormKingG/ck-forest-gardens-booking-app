@@ -361,31 +361,35 @@ const App: React.FC = () => {
 
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-        <div className="bg-white rounded-xl shadow-2xl max-w-md w-full p-6">
-          <div className="flex items-center justify-center mb-4">
-            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
-              <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
-              </svg>
-            </div>
+        <div className="bg-white rounded-xl shadow-2xl max-w-md w-full overflow-hidden">
+          {/* Cover Image */}
+          <div className="w-full h-48 overflow-hidden">
+            <img 
+              src="/Untitled design (14).png" 
+              alt="CK Forest Tours" 
+              className="w-full h-full object-cover"
+            />
           </div>
-          <h2 className="text-2xl font-bold text-gray-900 text-center mb-4">Install CK Forest Tours</h2>
-          <p className="text-gray-700 text-center mb-6">
-            Install our app for quick access to the admin panel and better performance on your device.
-          </p>
-          <div className="flex gap-3">
-            <button
-              onClick={handleInstallFromModal}
-              className="flex-1 bg-green-600 text-white font-semibold py-3 px-4 rounded-lg hover:bg-green-700 transition-colors"
-            >
-              Install Now
-            </button>
-            <button
-              onClick={handleDismissInstallModal}
-              className="flex-1 bg-gray-200 text-gray-700 font-semibold py-3 px-4 rounded-lg hover:bg-gray-300 transition-colors"
-            >
-              Maybe Later
-            </button>
+          {/* Content */}
+          <div className="p-6">
+            <h2 className="text-2xl font-bold text-gray-900 text-center mb-4">Install CK Forest Tours Admin App</h2>
+            <p className="text-gray-700 text-center mb-6">
+              Install our app for quick access to the admin panel and better performance on your device.
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={handleInstallFromModal}
+                className="flex-1 bg-green-600 text-white font-semibold py-3 px-4 rounded-lg hover:bg-green-700 transition-colors"
+              >
+                Install Now
+              </button>
+              <button
+                onClick={handleDismissInstallModal}
+                className="flex-1 bg-gray-200 text-gray-700 font-semibold py-3 px-4 rounded-lg hover:bg-gray-300 transition-colors"
+              >
+                Maybe Later
+              </button>
+            </div>
           </div>
         </div>
       </div>
