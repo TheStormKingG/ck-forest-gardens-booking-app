@@ -365,7 +365,7 @@ const App: React.FC = () => {
           {/* Cover Image */}
           <div className="w-full h-48 overflow-hidden">
             <img 
-              src="/Untitled design (14).png" 
+              src="/Untitled design (15).png" 
               alt="CK Forest Tours" 
               className="w-full h-full object-cover"
             />
