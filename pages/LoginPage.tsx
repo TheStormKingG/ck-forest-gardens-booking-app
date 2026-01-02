@@ -46,8 +46,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
                 const profileData = {
                     user_id: supabaseUser.id,
                     email: userEmail,
-                    role: 'Management',
-                    full_name: supabaseUser.user_metadata?.full_name || supabaseUser.user_metadata?.name || 'Admin User'
+                    role: 'Management'
                 };
                 
                 let profileError;
