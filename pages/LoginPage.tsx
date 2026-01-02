@@ -6,6 +6,13 @@ interface LoginPageProps {
     onLoginSuccess: (user: User) => void;
 }
 
+// List of authorized admin email addresses
+const AUTHORIZED_ADMIN_EMAILS = [
+    'stefan.gravesande@preqal.org',
+    'ritchiegoring@gmail.com',
+    // Add more emails here as needed
+];
+
 const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
@@ -41,10 +48,21 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
 
     const handleAuthSuccess = async (supabaseUser: any) => {
         try {
+            const userEmail = supabaseUser.email || '';
+            
+            // Check if the user's email is in the authorized list
+            if (!AUTHORIZED_ADMIN_EMAILS.includes(userEmail.toLowerCase())) {
+                // Sign out the unauthorized user
+                await supabase.auth.signOut();
+                setError(`Access denied. The email ${userEmail} is not authorized to access the management panel.`);
+                setIsLoading(false);
+                return;
+            }
+            
             // Create user object from Supabase auth user
             const user: User = {
                 id: supabaseUser.id,
-                email: supabaseUser.email || '',
+                email: userEmail,
                 fullName: supabaseUser.user_metadata?.full_name || supabaseUser.user_metadata?.name || 'Admin User',
                 role: 'Management' // All Google-authenticated users are treated as Management
             };
@@ -53,6 +71,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
         } catch (err) {
             console.error('Auth success handler error:', err);
             setError('Failed to complete login. Please try again.');
+            setIsLoading(false);
         }
     };
 
