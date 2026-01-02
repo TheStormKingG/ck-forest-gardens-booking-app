@@ -180,6 +180,26 @@ const App: React.FC = () => {
     };
   }, [currentUser]);
 
+  // Show install modal when admin user becomes available (if not in standalone mode)
+  useEffect(() => {
+    if (!isAppInstalled() && currentUser?.role === 'management' && page === 'admin') {
+      const installModalDismissed = localStorage.getItem('installModalDismissed');
+      if (!installModalDismissed && !showInstallModal) {
+        console.log('Admin user detected - checking if modal should show:', {
+          appInstalled: isAppInstalled(),
+          installModalDismissed,
+          showInstallModal
+        });
+        // Small delay to ensure page is rendered
+        const timer = setTimeout(() => {
+          console.log('Triggering install modal from useEffect');
+          setShowInstallModal(true);
+        }, 1000);
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [currentUser, page, showInstallModal]);
+
   const handleInstallClick = async () => {
     console.log('=== INSTALL BUTTON CLICKED ===');
     
