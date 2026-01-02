@@ -5,6 +5,10 @@ interface AboutPageProps {
 }
 
 const AboutPage: React.FC<AboutPageProps> = ({ navigate }) => {
+  // WhatsApp number: +592 633 5874 (formatted for wa.me links)
+  const whatsAppNumber = '5926335874';
+  const whatsAppLink = `https://wa.me/${whatsAppNumber}`;
+  
   return (
     <div className="max-w-4xl mx-auto">
       {/* Opening Value Statement */}
@@ -163,12 +167,14 @@ const AboutPage: React.FC<AboutPageProps> = ({ navigate }) => {
         <p className="text-gray-700 mb-6">
           We're here to help you plan the perfect tour experience in Guyana.
         </p>
-        <button
-          onClick={() => navigate('booking')}
-          className="bg-green-600 text-white font-semibold py-3 px-8 rounded-lg hover:bg-green-700 transition-colors mr-4"
+        <a
+          href={whatsAppLink}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="bg-green-600 text-white font-semibold py-3 px-8 rounded-lg hover:bg-green-700 transition-colors mr-4 inline-block"
         >
           Plan My Trip
-        </button>
+        </a>
         <button
           onClick={() => navigate('policies')}
           className="bg-white text-green-600 border-2 border-green-600 font-semibold py-3 px-8 rounded-lg hover:bg-green-50 transition-colors"
