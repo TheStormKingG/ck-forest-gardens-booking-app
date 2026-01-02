@@ -13,8 +13,11 @@ export async function adminListBookings() {
   
   if (error) {
     console.error('Error fetching all bookings:', error);
+    console.error('Error details:', { code: error.code, message: error.message, details: error.details, hint: error.hint });
     throw error;
   }
+  
+  console.log('adminListBookings: Fetched', data?.length || 0, 'bookings');
   
   // Return all bookings - no filtering applied
   return data || [];
