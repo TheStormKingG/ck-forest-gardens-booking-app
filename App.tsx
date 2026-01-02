@@ -15,6 +15,7 @@ import CalendarPage from './pages/CalendarPage';
 import GamificationPage from './pages/GamificationPage';
 import { api } from './services/apiMock';
 import { getGeneralSettings, getLogoSettings } from './src/services/settings';
+import { supabase } from './src/supabase-client';
 
 type BeforeInstallPromptEvent = Event & {
   prompt: () => Promise<void>;
@@ -237,7 +238,14 @@ const App: React.FC = () => {
     }
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    // Sign out from Supabase
+    try {
+      await supabase.auth.signOut();
+    } catch (error) {
+      console.error('Supabase sign out error:', error);
+    }
+    
     setCurrentUser(null);
     localStorage.removeItem('currentUser');
     localStorage.removeItem('currentPage');
