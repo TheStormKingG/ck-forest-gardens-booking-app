@@ -33,6 +33,28 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
                 return;
             }
             
+            // Ensure profile exists in database with Management role for RLS policies
+            try {
+                const { error: profileError } = await supabase
+                    .from('profiles')
+                    .upsert({
+                        user_id: supabaseUser.id,
+                        email: userEmail,
+                        role: 'Management',
+                        full_name: supabaseUser.user_metadata?.full_name || supabaseUser.user_metadata?.name || 'Admin User'
+                    }, {
+                        onConflict: 'user_id'
+                    });
+                
+                if (profileError) {
+                    console.error('Error upserting profile:', profileError);
+                    // Continue anyway - the role check happens in frontend too
+                }
+            } catch (profileErr) {
+                console.error('Error creating/updating profile:', profileErr);
+                // Continue anyway - frontend authorization still works
+            }
+            
             // Create user object from Supabase auth user
             const user: User = {
                 id: supabaseUser.id,
