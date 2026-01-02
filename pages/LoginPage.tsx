@@ -16,6 +16,8 @@ const AUTHORIZED_ADMIN_EMAILS = [
 const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [showAccessDeniedModal, setShowAccessDeniedModal] = useState(false);
+    const [deniedEmail, setDeniedEmail] = useState('');
 
     const handleAuthSuccess = useCallback(async (supabaseUser: any) => {
         try {
@@ -25,7 +27,8 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
             if (!AUTHORIZED_ADMIN_EMAILS.includes(userEmail.toLowerCase())) {
                 // Sign out the unauthorized user
                 await supabase.auth.signOut();
-                setError(`Access denied. The email ${userEmail} is not authorized to access the management panel.`);
+                setDeniedEmail(userEmail);
+                setShowAccessDeniedModal(true);
                 setIsLoading(false);
                 return;
             }
@@ -165,6 +168,38 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
                     </p>
                 </div>
             </div>
+
+            {/* Access Denied Modal */}
+            {showAccessDeniedModal && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                    <div className="bg-white rounded-xl shadow-2xl max-w-md w-full p-6">
+                        <div className="flex items-center justify-center mb-4">
+                            <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center">
+                                <svg className="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </div>
+                        </div>
+                        <h2 className="text-2xl font-bold text-gray-900 text-center mb-4">Access Denied</h2>
+                        <p className="text-gray-700 text-center mb-2">
+                            The email <span className="font-semibold">{deniedEmail}</span> is not authorized to access the management panel.
+                        </p>
+                        <p className="text-sm text-gray-600 text-center mb-6">
+                            Please contact an administrator if you believe this is an error.
+                        </p>
+                        <button
+                            onClick={() => {
+                                setShowAccessDeniedModal(false);
+                                setDeniedEmail('');
+                                setError('');
+                            }}
+                            className="w-full bg-green-600 text-white font-semibold py-3 px-4 rounded-lg hover:bg-green-700 transition-colors"
+                        >
+                            Close
+                        </button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
