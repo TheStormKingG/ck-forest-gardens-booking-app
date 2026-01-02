@@ -275,15 +275,21 @@ const App: React.FC = () => {
       localStorage.setItem('currentPage', 'admin');
       
       // Show install modal for admin users if app is not installed
-      if (!isAppInstalled()) {
-        // Check if user has dismissed the modal before (don't show again)
-        const installModalDismissed = localStorage.getItem('installModalDismissed');
-        if (!installModalDismissed) {
-          // Small delay to ensure page navigation completes
-          setTimeout(() => {
-            setShowInstallModal(true);
-          }, 500);
-        }
+      const appInstalled = isAppInstalled();
+      const installModalDismissed = localStorage.getItem('installModalDismissed');
+      
+      console.log('Admin login - Modal check:', { 
+        appInstalled, 
+        installModalDismissed, 
+        shouldShow: !appInstalled && !installModalDismissed 
+      });
+      
+      if (!appInstalled && !installModalDismissed) {
+        // Small delay to ensure page navigation completes
+        setTimeout(() => {
+          console.log('Showing install modal');
+          setShowInstallModal(true);
+        }, 500);
       }
     } else {
       navigate('my-bookings');
