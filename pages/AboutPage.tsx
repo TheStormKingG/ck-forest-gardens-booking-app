@@ -125,42 +125,6 @@ const AboutPage: React.FC<AboutPageProps> = ({ navigate }) => {
         </div>
       </section>
 
-      {/* Social Proof & Impact */}
-      <section className="mb-16">
-        <h2 className="text-3xl font-bold text-green-900 mb-8">Guest Experiences & Impact</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <p className="text-gray-700 italic mb-4">
-              "Our guide was incredible—knowledgeable, patient, and truly passionate about Guyana's 
-              wildlife. The small group size meant we could ask questions and move at our own pace. 
-              Best eco-tour I've ever taken."
-            </p>
-            <p className="text-sm font-semibold text-green-900">— Sarah M., United States</p>
-          </div>
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <p className="text-gray-700 italic mb-4">
-              "The safety protocols were thorough and clear from booking to completion. Felt completely 
-              safe the entire time. The local guide's stories made the experience unforgettable."
-            </p>
-            <p className="text-sm font-semibold text-green-900">— James T., United Kingdom</p>
-          </div>
-        </div>
-        <div className="bg-green-50 rounded-lg p-6">
-          <h3 className="text-xl font-bold text-green-900 mb-4">Community & Conservation Impact</h3>
-          <p className="text-gray-700 mb-4">
-            A portion of every booking supports local conservation initiatives and community development 
-            projects in the regions where we operate. We partner with local organizations to ensure our 
-            tours contribute positively to both environmental protection and local livelihoods.
-          </p>
-          <button
-            onClick={() => navigate('packages')}
-            className="bg-green-600 text-white font-semibold py-2 px-6 rounded-lg hover:bg-green-700 transition-colors"
-          >
-            Explore Our Tours
-          </button>
-        </div>
-      </section>
-
       {/* Contact CTA */}
       <section className="bg-white border-2 border-green-200 rounded-xl p-8 text-center">
         <h2 className="text-2xl font-bold text-green-900 mb-4">Have Questions?</h2>
