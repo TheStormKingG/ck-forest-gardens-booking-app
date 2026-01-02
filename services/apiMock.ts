@@ -52,7 +52,7 @@ const PASSWORDS_STORAGE_KEY = 'ckfg_passwords';
 const initialUsers: User[] = [
     { id: 'user-1', email: 'user@example.com', fullName: 'Alice Wonder', role: 'User' },
     { id: 'user-2', email: 'charlie@factory.com', fullName: 'Charlie Chocolate', role: 'User' },
-    { id: 'admin-1', email: 'ckforestgardens@gmail.com', fullName: 'Admin CKFG', role: 'Management' }
+    { id: 'admin-1', email: 'ckforestgardens@gmail.com', fullName: 'Admin CKFG', role: 'management' }
 ];
 
 const initialPasswords: Record<string, string> = {
@@ -252,9 +252,9 @@ export const api = {
     return mockBookings[bookingIndex];
   },
 
-  getBookings: async (user: User | null, role: 'User' | 'Management'): Promise<Booking[]> => {
+  getBookings: async (user: User | null, role: 'User' | 'management'): Promise<Booking[]> => {
     await delay(800);
-    if (role === 'Management') {
+    if (role === 'management') {
       return [...mockBookings].sort((a,b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
     }
     if (user) {

@@ -33,7 +33,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
                 return;
             }
             
-            // Ensure profile exists in database with Management role for RLS policies
+            // Ensure profile exists in database with management role for RLS policies
             try {
                 // First, try to get existing profile
                 const { data: existingProfile } = await supabase
@@ -46,7 +46,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
                 const profileData = {
                     user_id: supabaseUser.id,
                     email: userEmail,
-                    role: 'Management'
+                    role: 'management'
                 };
                 
                 let profileError;
@@ -82,7 +82,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
                 id: supabaseUser.id,
                 email: userEmail,
                 fullName: supabaseUser.user_metadata?.full_name || supabaseUser.user_metadata?.name || 'Admin User',
-                role: 'Management' // All Google-authenticated users are treated as Management
+                role: 'management' // All Google-authenticated users are treated as management
             };
             
             onLoginSuccess(user);

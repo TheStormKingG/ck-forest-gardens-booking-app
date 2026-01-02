@@ -41,7 +41,7 @@ export interface User {
   id: string;
   email: string;
   fullName: string;
-  role: 'User' | 'Management';
+  role: 'User' | 'management';
 }
 
 // Fix: Add missing AdminPage enum

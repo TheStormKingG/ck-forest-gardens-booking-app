@@ -44,7 +44,7 @@ const App: React.FC = () => {
       try {
         const user = JSON.parse(savedUser);
         setCurrentUser(user);
-        if (user.role === 'Management' && savedPage === 'admin') {
+        if (user.role === 'management' && savedPage === 'admin') {
           setPage('admin');
           // Restore admin tab if available
           if (savedAdminTab) {
@@ -229,7 +229,7 @@ const App: React.FC = () => {
   const handleLoginSuccess = (user: User) => {
     setCurrentUser(user);
     localStorage.setItem('currentUser', JSON.stringify(user));
-    if (user.role === 'Management') {
+    if (user.role === 'management') {
       navigate('admin');
       localStorage.setItem('currentPage', 'admin');
     } else {
@@ -292,7 +292,7 @@ const App: React.FC = () => {
       case 'leaderboard':
         return <GamificationPage currentUser={currentUser} />;
       case 'admin':
-        if (currentUser?.role === 'Management') {
+        if (currentUser?.role === 'management') {
           return <AdminPage currentUser={currentUser} onSettingsChange={handleSettingsChange} />;
         }
         navigate('home');

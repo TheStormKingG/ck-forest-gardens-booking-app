@@ -30,7 +30,7 @@ const Header: React.FC<HeaderProps> = ({
   onBack,
   onForward,
 }) => {
-  const isAdminView = currentUser?.role === 'Management';
+  const isAdminView = currentUser?.role === 'management';
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Navigation links

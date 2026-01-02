@@ -105,9 +105,9 @@ export const api = {
     return mockBookings[bookingIndex];
   },
 
-  getBookings: async (user: User | undefined, role: 'User' | 'Management'): Promise<Booking[]> => {
+  getBookings: async (user: User | undefined, role: 'User' | 'management'): Promise<Booking[]> => {
     await delay(800);
-    if (role === 'Management' || !user) {
+    if (role === 'management' || !user) {
       return [...mockBookings].sort((a,b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
     }
     return mockBookings.filter(b => b.email === user.email)
