@@ -35,33 +35,68 @@ const App: React.FC = () => {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [showInstallModal, setShowInstallModal] = useState<boolean>(false);
 
-  // Restore session on page reload
+  // Restore session on page reload and handle PWA standalone mode
   useEffect(() => {
     const savedUser = localStorage.getItem('currentUser');
     const savedPage = localStorage.getItem('currentPage');
     const savedAdminTab = localStorage.getItem('adminTab');
     
-    if (savedUser && savedPage) {
-      try {
-        const user = JSON.parse(savedUser);
-        setCurrentUser(user);
-        if (user.role === 'management' && savedPage === 'admin') {
-          setPage('admin');
-          // Restore admin tab if available
-          if (savedAdminTab) {
-            // @ts-ignore
-            window.adminTab = savedAdminTab;
+    // If app is installed (standalone mode), redirect to admin/login
+    if (isAppInstalled()) {
+      if (savedUser) {
+        try {
+          const user = JSON.parse(savedUser);
+          setCurrentUser(user);
+          if (user.role === 'management') {
+            setPage('admin');
+            localStorage.setItem('currentPage', 'admin');
+            // Restore admin tab if available
+            if (savedAdminTab) {
+              // @ts-ignore
+              window.adminTab = savedAdminTab;
+            }
+          } else {
+            // Not an admin user, redirect to login
+            setPage('login');
+            localStorage.setItem('currentPage', 'login');
           }
+        } catch (error) {
+          console.error('Failed to restore user session:', error);
+          localStorage.removeItem('currentUser');
+          localStorage.removeItem('currentPage');
+          localStorage.removeItem('adminTab');
+          setPage('login');
+          localStorage.setItem('currentPage', 'login');
         }
-      } catch (error) {
-        console.error('Failed to restore user session:', error);
-        localStorage.removeItem('currentUser');
-        localStorage.removeItem('currentPage');
-        localStorage.removeItem('adminTab');
+      } else {
+        // No saved user, redirect to login in standalone mode
+        setPage('login');
+        localStorage.setItem('currentPage', 'login');
       }
-    } else if (savedPage) {
-      // Restore page even without user (for booking form persistence)
-      setPage(savedPage);
+    } else {
+      // Normal browser mode - restore session normally
+      if (savedUser && savedPage) {
+        try {
+          const user = JSON.parse(savedUser);
+          setCurrentUser(user);
+          if (user.role === 'management' && savedPage === 'admin') {
+            setPage('admin');
+            // Restore admin tab if available
+            if (savedAdminTab) {
+              // @ts-ignore
+              window.adminTab = savedAdminTab;
+            }
+          }
+        } catch (error) {
+          console.error('Failed to restore user session:', error);
+          localStorage.removeItem('currentUser');
+          localStorage.removeItem('currentPage');
+          localStorage.removeItem('adminTab');
+        }
+      } else if (savedPage) {
+        // Restore page even without user (for booking form persistence)
+        setPage(savedPage);
+      }
     }
     
     // Clear any cached settings/logo from localStorage to ensure fresh load from Supabase
@@ -110,7 +145,7 @@ const App: React.FC = () => {
     );
   };
 
-  // PWA: register listeners and only show Install button when BIP fires
+  // PWA: register listeners and only show Install button when BIP fires (admin users only)
   useEffect(() => {
     console.log('=== PWA INSTALLATION SETUP ===');
 
@@ -118,8 +153,8 @@ const App: React.FC = () => {
       console.log('beforeinstallprompt event fired!');
       e.preventDefault();
       setDeferredPrompt(e as BeforeInstallPromptEvent);
-      // Only set install available if app is not already installed
-      if (!isAppInstalled()) {
+      // Only set install available if app is not already installed AND user is admin
+      if (!isAppInstalled() && currentUser?.role === 'management') {
         setInstallAvailable(true);
       }
     };
@@ -134,8 +169,8 @@ const App: React.FC = () => {
     window.addEventListener('beforeinstallprompt', onBIP);
     window.addEventListener('appinstalled', onInstalled);
 
-    // Hide button if already installed (Chrome + iOS Safari)
-    if (isAppInstalled()) {
+    // Hide button if already installed (Chrome + iOS Safari) or user is not admin
+    if (isAppInstalled() || currentUser?.role !== 'management') {
       setInstallAvailable(false);
     }
 
@@ -143,7 +178,7 @@ const App: React.FC = () => {
       window.removeEventListener('beforeinstallprompt', onBIP);
       window.removeEventListener('appinstalled', onInstalled);
     };
-  }, []);
+  }, [currentUser]);
 
   const handleInstallClick = async () => {
     console.log('=== INSTALL BUTTON CLICKED ===');
