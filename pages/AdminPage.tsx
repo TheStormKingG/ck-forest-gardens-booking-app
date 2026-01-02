@@ -406,12 +406,15 @@ const DashboardView: React.FC = () => {
 const QueueView: React.FC = () => {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const fetchAllBookings = useCallback(async () => {
     setIsLoading(true);
-    /* NEW: load from Supabase and map to UI Booking */
-    const rows: any[] = await adminListBookings();
-    const mapped: Booking[] = rows.map((r: any) => ({
+    setError(null);
+    try {
+      /* NEW: load from Supabase and map to UI Booking */
+      const rows: any[] = await adminListBookings();
+      const mapped: Booking[] = rows.map((r: any) => ({
       id: r.id,
       createdAt: r.created_at || r.createdAt || new Date().toISOString(),
       fullName: r.full_name,
@@ -431,9 +434,15 @@ const QueueView: React.FC = () => {
       depositDue: r.deposit_due ?? 0,
       receiptUrl: r.receipt_url || null,
       status: BookingStatus.PendingDeposit, // Default status since schema doesn't have status column
-    }));
-    setBookings(mapped);
-    setIsLoading(false);
+      }));
+      setBookings(mapped);
+    } catch (err: any) {
+      console.error('Error fetching bookings:', err);
+      setError(err.message || 'Failed to load bookings. Please check your RLS policies in Supabase.');
+      setBookings([]);
+    } finally {
+      setIsLoading(false);
+    }
   }, []);
 
   useEffect(() => {
@@ -442,6 +451,18 @@ const QueueView: React.FC = () => {
 
   if (isLoading) {
     return <div className="text-center p-8">Loading bookings...</div>;
+  }
+
+  if (error) {
+    return (
+      <div className="bg-white shadow-md rounded-lg p-8">
+        <div className="text-center text-red-600">
+          <p className="font-semibold mb-2">Error Loading Bookings</p>
+          <p className="text-sm">{error}</p>
+          <p className="text-xs mt-4 text-gray-600">Make sure your Supabase RLS policy allows 'Management' role users to SELECT bookings.</p>
+        </div>
+      </div>
+    );
   }
   
   return (
@@ -495,6 +516,7 @@ const QueueView: React.FC = () => {
 const ManagementCalendarView: React.FC = () => {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [displayDate, setDisplayDate] = useState(new Date());
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
 
@@ -507,9 +529,11 @@ const ManagementCalendarView: React.FC = () => {
 
   const fetchAllBookings = useCallback(async () => {
     setIsLoading(true);
-    /* NEW: load from Supabase and map to UI Booking */
-    const rows: any[] = await adminListBookings();
-    const mapped: Booking[] = rows.map((r: any) => ({
+    setError(null);
+    try {
+      /* NEW: load from Supabase and map to UI Booking */
+      const rows: any[] = await adminListBookings();
+      const mapped: Booking[] = rows.map((r: any) => ({
       id: r.id,
       createdAt: r.created_at || r.createdAt || new Date().toISOString(),
       fullName: r.full_name,
@@ -529,9 +553,15 @@ const ManagementCalendarView: React.FC = () => {
       depositDue: r.deposit_due ?? 0,
       receiptUrl: r.receipt_url || null,
       status: BookingStatus.PendingDeposit, // Default status since schema doesn't have status column
-    }));
-    setBookings(mapped);
-    setIsLoading(false);
+      }));
+      setBookings(mapped);
+    } catch (err: any) {
+      console.error('Error fetching bookings:', err);
+      setError(err.message || 'Failed to load bookings. Please check your RLS policies in Supabase.');
+      setBookings([]);
+    } finally {
+      setIsLoading(false);
+    }
   }, []);
 
   useEffect(() => {
