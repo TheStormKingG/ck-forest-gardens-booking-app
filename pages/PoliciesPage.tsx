@@ -6,6 +6,10 @@ interface PoliciesPageProps {
 
 const PoliciesPage: React.FC<PoliciesPageProps> = ({ navigate }) => {
   const [activeSection, setActiveSection] = useState<string>('terms');
+  
+  // WhatsApp number: +592 633 5874 (formatted for wa.me links)
+  const whatsAppNumber = '5926335874';
+  const whatsAppLink = `https://wa.me/${whatsAppNumber}`;
 
   const policies = [
     { id: 'terms', label: 'Terms & Conditions' },
@@ -287,12 +291,14 @@ const PoliciesPage: React.FC<PoliciesPageProps> = ({ navigate }) => {
         <p className="text-gray-700 mb-6">
           Contact us for clarification on any policy or to discuss special circumstances.
         </p>
-        <button
-          onClick={() => navigate('booking')}
-          className="bg-green-600 text-white font-semibold py-3 px-8 rounded-lg hover:bg-green-700 transition-colors"
+        <a
+          href={whatsAppLink}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="bg-green-600 text-white font-semibold py-3 px-8 rounded-lg hover:bg-green-700 transition-colors inline-block"
         >
           Contact Us
-        </button>
+        </a>
       </div>
 
       {/* Legal Footer */}
