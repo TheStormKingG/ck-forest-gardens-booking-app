@@ -14,7 +14,21 @@ const ASSETS = [
 // Precache core assets
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS))
+    caches.open(CACHE_NAME).then((cache) => {
+      // Use Promise.allSettled to handle missing assets gracefully
+      return Promise.allSettled(
+        ASSETS.map((url) => 
+          fetch(url)
+            .then((res) => {
+              if (res.ok) return cache.put(url, res);
+            })
+            .catch(() => {
+              // Silently skip assets that fail to load
+              console.warn(`Service worker: Failed to cache ${url}`);
+            })
+        )
+      );
+    })
   );
   self.skipWaiting();
 });
