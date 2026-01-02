@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { User } from '../types';
 import { supabase } from '../src/supabase-client';
 
@@ -17,36 +17,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
-    // Check for existing session on mount
-    useEffect(() => {
-        const checkSession = async () => {
-            try {
-                const { data: { session } } = await supabase.auth.getSession();
-                if (session?.user) {
-                    await handleAuthSuccess(session.user);
-                }
-            } catch (err) {
-                console.error('Session check error:', err);
-            }
-        };
-
-        checkSession();
-
-        // Listen for auth changes
-        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-            if (event === 'SIGNED_IN' && session?.user) {
-                await handleAuthSuccess(session.user);
-            } else if (event === 'SIGNED_OUT') {
-                setError('');
-            }
-        });
-
-        return () => {
-            subscription.unsubscribe();
-        };
-    }, []);
-
-    const handleAuthSuccess = async (supabaseUser: any) => {
+    const handleAuthSuccess = useCallback(async (supabaseUser: any) => {
         try {
             const userEmail = supabaseUser.email || '';
             
@@ -73,7 +44,40 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
             setError('Failed to complete login. Please try again.');
             setIsLoading(false);
         }
-    };
+    }, [onLoginSuccess]);
+
+    // Check for existing session on mount
+    useEffect(() => {
+        const checkSession = async () => {
+            try {
+                const { data: { session } } = await supabase.auth.getSession();
+                if (session?.user) {
+                    setIsLoading(true);
+                    await handleAuthSuccess(session.user);
+                }
+            } catch (err) {
+                console.error('Session check error:', err);
+                setIsLoading(false);
+            }
+        };
+
+        checkSession();
+
+        // Listen for auth changes
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+            if (event === 'SIGNED_IN' && session?.user) {
+                setIsLoading(true);
+                await handleAuthSuccess(session.user);
+            } else if (event === 'SIGNED_OUT') {
+                setError('');
+                setIsLoading(false);
+            }
+        });
+
+        return () => {
+            subscription.unsubscribe();
+        };
+    }, [handleAuthSuccess]);
 
     const handleGoogleLogin = async () => {
         setIsLoading(true);
