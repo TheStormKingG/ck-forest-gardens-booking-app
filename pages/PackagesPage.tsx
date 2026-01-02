@@ -96,12 +96,14 @@ const PackagesPage: React.FC<PackagesPageProps> = ({ navigate }) => {
         <p className="text-gray-700 mb-6">
           We can create a personalized itinerary tailored to your group's interests, timeline, and budget.
         </p>
-        <button
-          onClick={() => navigate('booking')}
-          className="bg-green-600 text-white font-semibold py-3 px-8 rounded-lg hover:bg-green-700 transition-colors"
+        <a
+          href="https://wa.me/5927122534"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="bg-green-600 text-white font-semibold py-3 px-8 rounded-lg hover:bg-green-700 transition-colors inline-block"
         >
           Request Custom Tour
-        </button>
+        </a>
       </div>
     </div>
   );
