@@ -50,8 +50,8 @@ const AboutPage: React.FC<AboutPageProps> = ({ navigate }) => {
         <h2 className="text-3xl font-bold text-green-900 mb-8">Our Team & Expertise</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div className="bg-white rounded-lg shadow-md p-6">
-            <div className="w-24 h-24 bg-green-200 rounded-full flex items-center justify-center mb-4">
-              <span className="text-3xl font-bold text-green-600">CK</span>
+            <div className="w-24 h-24 mb-4 flex items-center justify-center">
+              <img src="/9675725.png" alt="Our Guides" className="w-full h-full object-contain" />
             </div>
             <h3 className="text-xl font-bold text-green-900 mb-2">Our Guides</h3>
             <p className="text-gray-700 mb-3">
@@ -67,8 +67,8 @@ const AboutPage: React.FC<AboutPageProps> = ({ navigate }) => {
             </ul>
           </div>
           <div className="bg-white rounded-lg shadow-md p-6">
-            <div className="w-24 h-24 bg-green-200 rounded-full flex items-center justify-center mb-4">
-              <span className="text-3xl font-bold text-green-600">SA</span>
+            <div className="w-24 h-24 mb-4 flex items-center justify-center">
+              <img src="/18212851.png" alt="Support Team" className="w-full h-full object-contain" />
             </div>
             <h3 className="text-xl font-bold text-green-900 mb-2">Support Team</h3>
             <p className="text-gray-700 mb-3">
