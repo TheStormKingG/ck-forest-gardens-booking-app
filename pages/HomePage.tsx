@@ -203,7 +203,7 @@ const HomePage: React.FC<HomePageProps> = ({ navigate }) => {
           </div>
         </div>
         <div className="mt-12 text-center">
-          <p className="text-gray-700 mb-4">Licensed & Insured | Safety First Certified | Tourism Board Registered</p>
+          <p className="text-gray-700 mb-4">Licensed | Safety First Certified | Tourism Board Registered</p>
         </div>
       </section>
 
