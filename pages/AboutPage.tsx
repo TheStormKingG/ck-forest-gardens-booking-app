@@ -5,8 +5,8 @@ interface AboutPageProps {
 }
 
 const AboutPage: React.FC<AboutPageProps> = ({ navigate }) => {
-  // WhatsApp number: +592 633 5874 (formatted for wa.me links)
-  const whatsAppNumber = '5926335874';
+  // WhatsApp number: +592 712 2534 (formatted for wa.me links)
+  const whatsAppNumber = '5927122534';
   const whatsAppLink = `https://wa.me/${whatsAppNumber}`;
   
   return (
